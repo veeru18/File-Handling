@@ -13,7 +13,9 @@ public enum ErrorMessage {
     IMAGE_SAVE_FAIL("Image save has failed, Please check logs"),
     IMAGE_INVALID_TYPE("Image Content Type is invalid"),
     IMAGE_INVALID_FORMAT_TYPE("Image Format type is Invalid"),
-    FILE_UPLOAD_FAILED("File not uploaded properly, contains empty data");
+    FILE_UPLOAD_FAILED("File not uploaded properly, contains empty data"),
+    IMAGE_NOT_FOUND("Image was not found by ID in the database"),
+    ENCODED_DATA_EMPTY_ERROR("Encoded Data is blank/empty among the two");
 
     private final String message;
 }

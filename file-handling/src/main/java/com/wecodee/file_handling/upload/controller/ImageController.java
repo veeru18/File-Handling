@@ -23,7 +23,8 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping("/upload/{userId}")
-    public ApiResponse<JSONObject> imageUpload(@PathVariable Long userId, @RequestParam(name = "file") MultipartFile multipartFile) {
+    public ApiResponse<JSONObject> imageUpload(@PathVariable Long userId,
+                                               @RequestParam(name = "file") MultipartFile multipartFile) throws Exception {
         return imageService.writeImageToDb(userId, multipartFile);
     }
 
