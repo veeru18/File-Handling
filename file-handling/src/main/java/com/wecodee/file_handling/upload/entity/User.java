@@ -23,12 +23,12 @@ public class User {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, mappedBy = "user")
+            fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
     private List<Document> documents;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, mappedBy = "user")
+            fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
     private List<Image> images;
 
     @Override
