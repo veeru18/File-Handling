@@ -44,25 +44,25 @@ public class GlobalExceptionHandler {
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
-    // -------------------- image related exceptions ------------------------
+    // -------------------- image/file doc related exceptions ------------------------
     @ExceptionHandler(FileNotFoundException.class)
     public ApiResponse<JSONObject> handleFileNotFoundException(FileNotFoundException e) {
         log.warn("Inside handleFileNotFoundException Handler");
-        return ApiResponse.failure(ResponseMessage.IMAGE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMAGE_SAVE_FAIL.getErrorCode(),
+        return ApiResponse.failure(ResponseMessage.FILE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMAGE_SAVE_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
     @ExceptionHandler(InvalidContentTypeException.class)
     public ApiResponse<JSONObject> handleInvalidContentTypeException(InvalidContentTypeException e) {
         log.warn("Inside handleInvalidContentTypeException Handler");
-        return ApiResponse.failure(ResponseMessage.IMAGE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMG_CONTENTTYPE_INVALID.getErrorCode(),
+        return ApiResponse.failure(ResponseMessage.FILE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMG_CONTENTTYPE_INVALID.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
     @ExceptionHandler(InvalidFormatTypeException.class)
     public ApiResponse<JSONObject> handleInvalidFormatTypeException(InvalidFormatTypeException e) {
         log.warn("Inside handleInvalidFormatTypeException Handler");
-        return ApiResponse.failure(ResponseMessage.IMAGE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMG_FORMAT_INVALID.getErrorCode(),
+        return ApiResponse.failure(ResponseMessage.FILE_SAVE_FAILED.getMessage(), ErrorCodes.FH_IMG_FORMAT_INVALID.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
@@ -72,9 +72,13 @@ public class GlobalExceptionHandler {
         return ApiResponse.failure(ResponseMessage.IMAGE_FETCH_FAILED.getMessage(), ErrorCodes.FH_IMG_NOT_FOUND.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
-    // -------------------- image related exceptions ------------------------
 
-
+    @ExceptionHandler(ImageAlreadyExistsException.class)
+    public ApiResponse<JSONObject> handleImageAlreadyExistsException(ImageAlreadyExistsException e){
+        log.warn("Inside handleImageAlreadyExistsException Handler");
+        return ApiResponse.failure(ResponseMessage.IMAGE_EXIST_BY_SAME_DATA.getMessage(), ErrorCodes.FH_IMG_UPLOAD_FAIL.getErrorCode(),
+                new JSONObject(Map.of("exceptionMessage", e.getMessage())));
+    }
 
     // -------------------- generic exceptions ------------------------
     // response will be given in below-mentioned format

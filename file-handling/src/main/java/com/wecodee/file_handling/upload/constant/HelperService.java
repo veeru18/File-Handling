@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.wecodee.file_handling.upload.exceptions.InvalidContentTypeException;
+import com.wecodee.file_handling.upload.exceptions.InvalidFormatTypeException;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,16 +47,30 @@ public class HelperService {
     private static final String SECRET_KEY = "veeresh";
     private static final String SALT = "veeresh6362";
 
+    @Value("${app.upload.dir}")
+    private String uploadDirectory;
+
     public static double sizeInMb(int compressedFileSize) {
-        try{
-            return compressedFileSize/(1024.0*1024.0);
+        try {
+            return compressedFileSize / (1024.0 * 1024.0);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public static double calculateExecutionTime(long currentTimeInMillis, long previousTimeInMillis) {
-        return (currentTimeInMillis-previousTimeInMillis)/1000.0;
+        return (currentTimeInMillis - previousTimeInMillis) / 1000.0;
+    }
+
+    public static void validateContentTypeAndFilename(MultipartFile multipartFile, String uploadType) {
+        String contentType = multipartFile.getContentType();
+        String filename = multipartFile.getOriginalFilename();
+        if (ObjectUtils.isEmpty(contentType) || contentType.startsWith("video"))
+            throw new InvalidContentTypeException(ErrorMessage.DOC_INVALID_TYPE.getMessage());
+        if (uploadType.equals(AppConstants.IMAGE) &&
+                (Objects.isNull(filename) || Objects.nonNull(AppConstants.IMG_EXTENSIONS_ALLOWED
+                        .getOrDefault(filename.substring(filename.lastIndexOf(".")), null))))
+            throw new InvalidFormatTypeException(ErrorMessage.DOC_INVALID_FORMAT_TYPE.getMessage());
     }
 
     public static boolean writeToFile(byte[] data, String outputPath) throws IOException {
@@ -72,16 +89,17 @@ public class HelperService {
     public InputStreamResource readFromFile(Long userId, Path compressedFilePath, String originalFileName) {
         log.info("Inside readFromFile method");
         try {
-            Path exactPath = Paths.get("C:", "Veeresh", "Stored Documents", String.valueOf(userId));
-            if(!Files.exists(compressedFilePath))
-                throw new RuntimeException("File does not exist at "+compressedFilePath);
+            Path exactPath = Paths.get(uploadDirectory, "Stored Documents", String.valueOf(userId), "compressed");
+//            Path exactPath = Paths.get("C:", "Veeresh", "Stored Documents", String.valueOf(userId));
+            if (!Files.exists(compressedFilePath))
+                throw new RuntimeException("File does not exist at " + compressedFilePath);
 //            File file = new File(path.toString());
             byte[] bytes = decompressData(Files.readAllBytes(compressedFilePath));
             String decompressedPath = exactPath + "\\" + originalFileName;
             // Just writing to view the docs sent, whereas compressed(aka name changed) ones are unable to be opened
             writeToFile(bytes, decompressedPath);
             //after write of decompressed file, reading it again
-            File decompressedFile= new File(decompressedPath);
+            File decompressedFile = new File(decompressedPath);
             return new InputStreamResource(new FileInputStream(decompressedFile));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -110,8 +128,7 @@ public class HelperService {
             compressedFile = compressData(fileBytes);
             double compressedSize = findUploadedDataSizeInMb(compressedFile);
             log.info("compressed data size: {} MB", compressedSize);
-        }
-        else compressedFile = fileBytes;
+        } else compressedFile = fileBytes;
         return compressedFile;
     }
 
@@ -126,8 +143,9 @@ public class HelperService {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageOutputStream imgOutputStream = ImageIO.createImageOutputStream(baos);
 
+        // getImageWriter might throw exception
         boolean hasWriter = ImageIO.getImageWritersByFormatName("webp").hasNext();
-        if(!hasWriter)
+        if (!hasWriter)
             throw new RuntimeException("No ImageIOWriter exists");
         System.out.println("Image IO writer found,");
 

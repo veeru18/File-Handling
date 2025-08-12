@@ -11,11 +11,12 @@ public enum ErrorMessage {
     USER_UPDATE_FAIL("User update failed, since user was not found"),
 
     IMAGE_SAVE_FAIL("Image save has failed, Please check logs"),
-    IMAGE_INVALID_TYPE("Image Content Type is invalid"),
-    IMAGE_INVALID_FORMAT_TYPE("Image Format type is Invalid"),
+    DOC_INVALID_TYPE("Document Content Type is invalid"),
+    DOC_INVALID_FORMAT_TYPE("Document Format type is Invalid"),
     FILE_UPLOAD_FAILED("File not uploaded properly, contains empty data"),
     IMAGE_NOT_FOUND("Image was not found by ID in the database"),
-    ENCODED_DATA_EMPTY_ERROR("Encoded Data is blank/empty among the two");
+    ENCODED_DATA_EMPTY_ERROR("Encoded Data is blank/empty among the two"),
+    IMAGE_ALREADY_EXISTS("Image already exists by same data content");
 
     private final String message;
 }

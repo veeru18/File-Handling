@@ -1,14 +1,16 @@
 package com.wecodee.file_handling.upload.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wecodee.file_handling.upload.constant.ApiResponse;
+import com.wecodee.file_handling.upload.constant.AppConstants;
 import com.wecodee.file_handling.upload.constant.HelperService;
 import com.wecodee.file_handling.upload.constant.ResponseMessage;
+import com.wecodee.file_handling.upload.dto.DocumentDTO;
 import com.wecodee.file_handling.upload.entity.Document;
 import com.wecodee.file_handling.upload.repository.DocumentRepository;
 import com.wecodee.file_handling.upload.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,7 @@ public class FileUploadService {
 
     private final DocumentRepository documentRepository;
     private final HelperService helperService;
+    private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
 
     @Transactional
@@ -47,16 +49,11 @@ public class FileUploadService {
             if (!userRepository.existsById(userId))
                 return ApiResponse.failure(ResponseMessage.DOCUMENT_SAVE_FAILED.getMessage(), responseObject);
             Document document = new Document();
+            // validating its content type(extension) and filename
+            HelperService.validateContentTypeAndFilename(multipartFile, AppConstants.FILE);
             String mediaType = multipartFile.getContentType();
-            if(ObjectUtils.isEmpty(mediaType) || (mediaType.contains("video")
-//                    || (contentType.contains("application") && !contentType.equals(MediaType.APPLICATION_JSON_VALUE))
-            ))
-                return ApiResponse.failure("Unsupported file type/Already a compressed file type");
             document.setFileType(mediaType);
             String originalFilename = multipartFile.getOriginalFilename();
-            if (ObjectUtils.isEmpty(originalFilename) || !originalFilename.contains("."))
-                throw new RuntimeException("Filename/extension doesn't exist please check");
-
             document.setOriginalFileName(originalFilename);
             // fileName generated here
             Long documentId = documentRepository.getDocumentValue(); //use a sequence to generate
@@ -83,8 +80,7 @@ public class FileUploadService {
                 // LZ-77 the encoder behind the gzip/deflate compression doesn't look at media Type
                 // it rearranges bytes arrays and get it corrupted and make the files "unreadable" by OS soft
                 // even though it doesn't decompress already compressed formats like pdf/png/zip/jpg
-                String[] mediaTypes = {"jpg", "jpeg", "png", "webp", "gif", "mp3", "aac", "flac", "mp4", "mpeg", "av1", "mkv", "zip", "pdf"};
-                if(Arrays.stream(mediaTypes).noneMatch(mediaType::contains))
+                if(AppConstants.FORMATS_LIST.stream().noneMatch(mediaType::contains))
                     compressedFile = helperService.compressFile(multipartFile);
                 else {
                     fileLocation = fileLocation.replaceAll("compressed_","");
@@ -94,13 +90,13 @@ public class FileUploadService {
             long compressedTime = System.currentTimeMillis();
             // execution for compression in seconds
             double compressionTimeInSecs = HelperService.calculateExecutionTime(compressedTime, startTime);
-            System.out.println("execution for compression in seconds: "+ compressionTimeInSecs);
+            log.info("execution for compression in seconds: {}", compressionTimeInSecs);
             // file written here
             HelperService.writeToFile(compressedFile, fileLocation);
             long stopTime = System.currentTimeMillis();
             // execution for write in seconds
             double writeTimeInSecs = HelperService.calculateExecutionTime(stopTime, compressedTime);
-            System.out.println("execution for write in seconds: "+ writeTimeInSecs);
+            log.info("execution for write in seconds: {}", writeTimeInSecs);
             document.setDocumentId(documentId);
             Document savedDocument = documentRepository.save(document);
             log.info("File saved successfully.. originalName: {} and path stored: {}", originalFilename, fileLocation);
@@ -108,7 +104,8 @@ public class FileUploadService {
             responseObject.put("compressedData size", HelperService.sizeInMb(compressedFile.length));
             responseObject.put("compression time taken", compressionTimeInSecs);
             responseObject.put("write to file time", writeTimeInSecs);
-            responseObject.put("docId", savedDocument.getDocumentId());
+            // converting to DTO here
+            responseObject.put("document", objectMapper.convertValue(savedDocument, DocumentDTO.class));
             // success response
             return ApiResponse.success(ResponseMessage.DOCUMENT_SAVE_SUCCESS.getMessage(), responseObject);
         } catch (Exception e) {

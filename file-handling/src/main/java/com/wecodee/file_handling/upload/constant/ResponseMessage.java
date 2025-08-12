@@ -18,13 +18,11 @@ public enum ResponseMessage {
     USER_SAVE_SUCCESS("User Save success"),
     DOCUMENT_SAVE_FAILED("Document Save failed"),
     DOCUMENT_SAVE_SUCCESS("Document Save success"),
-    IMAGE_SAVE_FAILED("Image Save failed"),
-    IMAGE_SAVE_SUCCESS("Image Save success"),
+    FILE_SAVE_FAILED("File Save failed"),
+    IMAGE_SAVE_SUCCESS("File Saved successfully"),
 
     //update responses
     USER_UPDATE_FAILED("User Update Failed"),
-    IMAGE_UPDATE_FAILED("Image update Failed"),
-    DOCUMENT_UPDATE_FAILED("Document update Failed"),
 
     //delete responses
     USER_DELETE_FAILED("User delete Failed"),
@@ -33,7 +31,8 @@ public enum ResponseMessage {
     IO_EXCEPTION_FAILURE("IO exception has occurred"),
     NO_SUCH_ALGORITHM_ERROR("General Security Error, no algorithm could be found for specified string"),
     DOC_COMPARE_FAILED("Documents comparison has failed, mostly due to empty/invalid byte data"),
-    INTERNAL_SERVER_ERROR("Internal server error, runtime exception occurred, please check logs!");
+    INTERNAL_SERVER_ERROR("Internal server error, runtime exception occurred, please check logs!"),
+    IMAGE_EXIST_BY_SAME_DATA("Image upload failed, due to same DataContent check b/w existing image and uploaded one");
 
     private final String message;
 

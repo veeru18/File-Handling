@@ -21,7 +21,8 @@ public enum ErrorCodes {
     FH_IMAGE_SAVE_FAIL("FH2001"),
     FH_IMG_CONTENTTYPE_INVALID("FH2002"),
     FH_IMG_FORMAT_INVALID("FH2003"),
-    FH_IMG_NOT_FOUND("FH2004");
+    FH_IMG_NOT_FOUND("FH2004"),
+    FH_IMG_UPLOAD_FAIL("FH2005");
 
     private final String errorCode;
 }

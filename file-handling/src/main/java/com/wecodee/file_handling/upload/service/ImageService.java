@@ -1,8 +1,8 @@
 package com.wecodee.file_handling.upload.service;
 
-import com.wecodee.file_handling.upload.constant.ApiResponse;
-import com.wecodee.file_handling.upload.constant.ErrorMessage;
-import com.wecodee.file_handling.upload.constant.HelperService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wecodee.file_handling.upload.constant.*;
+import com.wecodee.file_handling.upload.dto.ImageDTO;
 import com.wecodee.file_handling.upload.entity.Image;
 import com.wecodee.file_handling.upload.entity.User;
 import com.wecodee.file_handling.upload.exceptions.*;
@@ -24,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,47 +35,35 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     public ApiResponse<JSONObject> writeImageToDb(Long userId, MultipartFile multipartFile) throws Exception {
         log.info("Inside uploadFile method, userId:{}", userId);
         JSONObject responseObject = new JSONObject();
-//        try {
-            User existingUser = userRepository.findById(userId)
-                    .orElseThrow(()->new UserNotFoundException(ErrorMessage.IMAGE_SAVE_FAIL.getMessage()));
-            if (ObjectUtils.isEmpty(multipartFile) || multipartFile.isEmpty())
-                throw new FileNotFoundException(ErrorMessage.FILE_UPLOAD_FAILED.getMessage());
-            // validating its content type(extension) and filename
-            validateContentTypeAndFilename(multipartFile);
-            Image image = new Image();
-            image.setImageFileName(multipartFile.getOriginalFilename());
-            image.setImageType(multipartFile.getContentType());
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.IMAGE_SAVE_FAIL.getMessage()));
+        if (ObjectUtils.isEmpty(multipartFile) || multipartFile.isEmpty())
+            throw new FileNotFoundException(ErrorMessage.FILE_UPLOAD_FAILED.getMessage());
+        // validating its content type(extension) and filename
+        HelperService.validateContentTypeAndFilename(multipartFile, AppConstants.IMAGE);
+        Image image = new Image();
+        image.setImageFileName(multipartFile.getOriginalFilename());
+        image.setImageType(multipartFile.getContentType());
 
-            long startTime = System.currentTimeMillis();
-            Image imageData = saveImageData(existingUser, image, multipartFile);
+        long startTime = System.currentTimeMillis();
+        Image imageData = saveImageData(existingUser, image, multipartFile);
 
-            long stopTime = System.currentTimeMillis();
-            double writeTimeInSecs = HelperService.calculateExecutionTime(stopTime, startTime);
-            log.info("execution for write into db in seconds: {}", writeTimeInSecs);
+        long stopTime = System.currentTimeMillis();
+        double writeTimeInSecs = HelperService.calculateExecutionTime(stopTime, startTime);
+        log.info("execution for write into db in seconds: {}", writeTimeInSecs);
 
 
-            responseObject.put("image", imageData);
-            responseObject.put("write to db time in seconds", writeTimeInSecs);
-            // success response
-            return ApiResponse.success("Image save success", responseObject);
-//        } catch (Exception e) {
-//            throw e;
-//        }
-    }
+        responseObject.put("write to db time in seconds", writeTimeInSecs);
 
-    private void validateContentTypeAndFilename(MultipartFile multipartFile) {
-        String contentType = multipartFile.getContentType();
-        String filename = multipartFile.getOriginalFilename();
-        Map<String, Integer> extensionsAllowed = Map.of(".png",1,".jpg",2,".jpeg",3,".gif",4,".webp",5);
-        if(ObjectUtils.isEmpty(contentType) || contentType.startsWith("video"))
-            throw new InvalidContentTypeException(ErrorMessage.IMAGE_INVALID_TYPE.getMessage());
-        if(Objects.isNull(filename) ||
-                Objects.nonNull(extensionsAllowed.getOrDefault(filename.substring(filename.lastIndexOf(".")),null)))
-            throw new InvalidFormatTypeException(ErrorMessage.IMAGE_INVALID_FORMAT_TYPE.getMessage());
+        // converting to DTO here
+        responseObject.put("image", objectMapper.convertValue(imageData, ImageDTO.class));
+        // success response
+        return ApiResponse.success(ResponseMessage.IMAGE_SAVE_SUCCESS.getMessage(), responseObject);
     }
 
     private Image saveImageData(User user, Image thisImage, MultipartFile multipartFile) throws Exception {
@@ -81,11 +71,8 @@ public class ImageService {
         String filename, contentType;
         Image previousImgState = null;
         if (existImgRecord.isEmpty()) {
-//            Long imageId = imageRepository.getImageIdValue();
-//            filename = imageType + imageId + ".png";
             filename = multipartFile.getOriginalFilename();
             contentType = MediaType.IMAGE_PNG_VALUE;
-//            thisImage.setImageId(imageId);
             thisImage.setImageFileName(filename);
             //default value gets changed if we have multipart file
             thisImage.setImageType(contentType);
@@ -104,34 +91,34 @@ public class ImageService {
             filename = multipartFile.getOriginalFilename();
 
             contentType = multipartFile.getContentType();
-//            if (ObjectUtils.isNotEmpty(thisImage.getImageData())) {
+            if (ObjectUtils.isNotEmpty(thisImage.getImageData())) {
                 isSameHashData = compareImageDataUsingHash(encodedImageData, thisImage.getImageData());
-//            }
-            if(!isSameHashData)
-                thisImage.setImageData(encodedImageData); // image to bytes converted here
+            }
+            // it fails only at update using same imageData,
+            if (isSameHashData)
+                throw new ImageAlreadyExistsException(ErrorMessage.IMAGE_ALREADY_EXISTS.getMessage());
+
+            thisImage.setImageData(encodedImageData); // image to bytes converted here
         } else {
-            String imageData = thisImage.getImageData();
-            if(ObjectUtils.isNotEmpty(imageData)) {
-                if(!isEncodedData(imageData)) {
-                    imageData = Base64.getEncoder().encodeToString(imageData.getBytes());
+            String encodedImageData = thisImage.getImageData();
+            if (ObjectUtils.isNotEmpty(encodedImageData)) {
+                if (!isEncodedData(encodedImageData)) {
+                    encodedImageData = Base64.getEncoder().encodeToString(encodedImageData.getBytes());
                 }
-                isSameHashData = compareImageDataUsingHash(imageData,
-                        previousImgState==null?"":previousImgState.getImageData());
-                if (!isSameHashData)
-                    thisImage.setImageData(imageData);
+                isSameHashData = compareImageDataUsingHash(encodedImageData,
+                        ObjectUtils.isEmpty(previousImgState) ? "" : previousImgState.getImageData());
+
+                // it fails only at update using same imageData,
+                if (isSameHashData)
+                    throw new ImageAlreadyExistsException(ErrorMessage.IMAGE_ALREADY_EXISTS.getMessage());
+
+                thisImage.setImageData(encodedImageData);
             }
         }
-//        existingImage.(true);
-        // it fails only at update using same imageData,
         // when its new save or old update with new fileData, repo.save isn't called
-        if (!isSameHashData) {
-            thisImage.setImageType(contentType);
-            thisImage.setImageFileName(filename);
-            return imageRepository.save(thisImage);
-        } else {
-            // sending previously existing image from db
-            return previousImgState;
-        }
+        thisImage.setImageType(contentType);
+        thisImage.setImageFileName(filename);
+        return imageRepository.save(thisImage);
     }
 
     private boolean isEncodedData(String encodedData) {
@@ -146,7 +133,7 @@ public class ImageService {
 
     public boolean compareImageDataUsingHash(String newBase64Data, String existingBase64Data) throws Exception {
         log.info("Inside the compareImageDataHashes method");
-        if(StringUtils.isAnyEmpty(newBase64Data, existingBase64Data))
+        if (StringUtils.isAnyEmpty(newBase64Data, existingBase64Data))
             throw new EncodedDataEmptyException(ErrorMessage.ENCODED_DATA_EMPTY_ERROR.getMessage());
         // comparing 2 images with their byte array content's hash which compares only a part, for quick compare
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -160,22 +147,22 @@ public class ImageService {
     public ResponseEntity<InputStreamResource> getFile(Long userId, Long imageId, String disType) {
         log.info("Inside getFile method..");
 //        try {
-            if(!userRepository.existsById(userId))
-                throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
-            Image image = imageRepository.findById(imageId)
-                    .orElseThrow(()->new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND.getMessage()));
+        if (!userRepository.existsById(userId))
+            throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND.getMessage()));
 //            String fileLocation = image.getFileLocation();
 //            Path compressedFilePath = Paths.get(fileLocation);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf(image.getImageType()));
-            String originalFileName = image.getImageFileName();
-            headers.setContentDispositionFormData(disType, originalFileName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(image.getImageType()));
+        String originalFileName = image.getImageFileName();
+        headers.setContentDispositionFormData(disType, originalFileName);
 
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(Base64.getDecoder().decode(image.getImageData()));
-            return ResponseEntity.status(HttpStatus.OK)
-                    .headers(headers)
-                    .body(new InputStreamResource(byteArrayInputStream));
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(Base64.getDecoder().decode(image.getImageData()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .headers(headers)
+                .body(new InputStreamResource(byteArrayInputStream));
 //        } catch (Exception e) {
 //            log.info("exception in getFile method", e);
 //            return ResponseEntity.badRequest().body(null);
