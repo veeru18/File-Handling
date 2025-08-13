@@ -1,10 +1,10 @@
 package com.wecodee.file_handling.upload.service;
 
-import com.wecodee.file_handling.upload.constant.ApiResponse;
-import com.wecodee.file_handling.upload.constant.ErrorMessage;
-import com.wecodee.file_handling.upload.constant.HelperService;
-import com.wecodee.file_handling.upload.constant.ResponseMessage;
-import com.wecodee.file_handling.upload.dto.UserDTO;
+import com.wecodee.file_handling.constant.ApiResponse;
+import com.wecodee.file_handling.constant.ErrorMessage;
+import com.wecodee.file_handling.constant.HelperService;
+import com.wecodee.file_handling.constant.ResponseMessage;
+import com.wecodee.file_handling.upload.dto.UserDetailsDTO;
 import com.wecodee.file_handling.upload.entity.User;
 import com.wecodee.file_handling.upload.exceptions.UserDeleteException;
 import com.wecodee.file_handling.upload.exceptions.UserNotFoundException;
@@ -30,12 +30,12 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
-    public ApiResponse<JSONObject> saveUser(UserDTO userDTO) {
+    public ApiResponse<JSONObject> saveUser(UserDetailsDTO userDetailsDTO) {
         log.info("Inside saveUser method");
         JSONObject respObject = new JSONObject();
-        if (ObjectUtils.isEmpty(userDTO))
+        if (ObjectUtils.isEmpty(userDetailsDTO))
             throw new UserSaveException(ErrorMessage.USER_NOT_FOUND_INREQUEST.getMessage());
-        User mappedUser = modelMapper.map(userDTO, User.class);
+        User mappedUser = modelMapper.map(userDetailsDTO, User.class);
         User savedUser = userRepository.save(mappedUser);
         respObject.put("user", savedUser);
         return ApiResponse.success(ResponseMessage.USER_SAVE_SUCCESS.getMessage(), respObject);
@@ -52,14 +52,14 @@ public class UserService {
         return ApiResponse.success(ResponseMessage.USER_FETCH_SUCCESS.getMessage(), respObject);
     }
 
-    public ApiResponse<JSONObject> updateUser(Long userId, UserDTO userDTO) {
+    public ApiResponse<JSONObject> updateUser(Long userId, UserDetailsDTO userDetailsDTO) {
         log.info("Inside updateUser method");
         JSONObject respObject = new JSONObject();
-        if (ObjectUtils.isEmpty(userDTO) || Objects.isNull(userId))
+        if (ObjectUtils.isEmpty(userDetailsDTO) || Objects.isNull(userId))
             throw new UserUpdateException(ErrorMessage.USER_NOT_FOUND_INREQUEST.getMessage());
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserUpdateException(ErrorMessage.USER_UPDATE_FAIL.getMessage()));
-        modelMapper.map(userDTO, existingUser);
+        modelMapper.map(userDetailsDTO, existingUser);
         User updatedUser = userRepository.saveAndFlush(existingUser);
         respObject.put("user", updatedUser);
         return ApiResponse.success(ResponseMessage.USER_UPDATE_SUCCESS.getMessage(), respObject);

@@ -1,8 +1,8 @@
 package com.wecodee.file_handling.upload.service;
 
-import com.wecodee.file_handling.upload.constant.ApiResponse;
-import com.wecodee.file_handling.upload.constant.ResponseMessage;
-import com.wecodee.file_handling.upload.dto.UserDTO;
+import com.wecodee.file_handling.constant.ApiResponse;
+import com.wecodee.file_handling.constant.ResponseMessage;
+import com.wecodee.file_handling.upload.dto.UserDetailsDTO;
 import com.wecodee.file_handling.upload.entity.User;
 import com.wecodee.file_handling.upload.exceptions.UserDeleteException;
 import com.wecodee.file_handling.upload.exceptions.UserNotFoundException;
@@ -10,7 +10,6 @@ import com.wecodee.file_handling.upload.exceptions.UserSaveException;
 import com.wecodee.file_handling.upload.exceptions.UserUpdateException;
 import com.wecodee.file_handling.upload.repository.UserRepository;
 import net.minidev.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -65,31 +64,32 @@ public class UserServiceTest {
     @Test
     void saveUser_returnsUserSaved() {
         log.info("Inside saveUser_returnsUserSaved");
-        UserDTO userDTO = new UserDTO("Yo", "9916548890");
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO("Yo", "9916548890");
         User mappedUser = new User();
         mappedUser.setUsername("Yo");
         mappedUser.setPhoneNumber("9916548890");
 
         User mockUser = new User();
-        mockUser.setId(1L);
+        mockUser.setId(1L); // hardcoded
         mockUser.setUsername("Yo");
         mockUser.setPhoneNumber("9916548890");
         // when() is static method of Mockito to test based on certain cases
-        // that stubs(pushes) its required responses from its Autowired dependencies like thenThrow, thenReturn
-        when(modelMapper.map(userDTO, User.class)).thenReturn(mappedUser);
+        // that stubs(pushes) its required responses from
+        // its Autowired dependencies by using thenThrow, thenReturn
+        when(modelMapper.map(userDetailsDTO, User.class)).thenReturn(mappedUser);
         when(userRepository.save(mappedUser)).thenReturn(mockUser);
 
         JSONObject data = new JSONObject(Map.of("user", mockUser));
         ApiResponse<JSONObject> apiResponse = ApiResponse.success(ResponseMessage.USER_SAVE_SUCCESS.getMessage(), data);
         // based on when() conditions, tests are done using these Assertions class methods
-        assertEquals(apiResponse, userService.saveUser(userDTO));
+        assertEquals(apiResponse, userService.saveUser(userDetailsDTO));
     }
 
     @Test
     void saveUser_throwsUserSaveException() {
         log.info("Inside saveUser_throwsUserNotFoundException");
-        UserDTO userDTO = null;
-        assertThrows(UserSaveException.class, () -> userService.saveUser(userDTO));
+        UserDetailsDTO userDetailsDTO = null;
+        assertThrows(UserSaveException.class, () -> userService.saveUser(userDetailsDTO));
     }
 
     @Test
@@ -100,14 +100,16 @@ public class UserServiceTest {
 
     @Test
     void updateUser_throwsUserUpdateException() {
-        UserDTO userDTO = new UserDTO("Yo","9916548890");
+        log.info("Inside updateUser_throwsUserUpdateException");
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO("Yo","9916548890");
 
         assertThrows(UserUpdateException.class, ()-> userService.updateUser(1L,null));
-        assertThrows(UserUpdateException.class, ()-> userService.updateUser(null, userDTO));
+        assertThrows(UserUpdateException.class, ()-> userService.updateUser(null, userDetailsDTO));
     }
 
     @Test
     void deleteUser_throwsUserDeleteException() {
+        log.info("Inside deleteUser_throwsUserDeleteException");
         // adding the throw when any long value is passed
 
         User mockUser = new User();

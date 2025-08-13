@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -87,7 +87,7 @@ public class HelperService {
     }
 
     public static String generateStoredFileName(Long userId, Long documentId, String originalFilename, String mediaType) {
-        if(mediaType.startsWith("image/")) {
+        if (mediaType.startsWith("image/")) {
             String newFileName = originalFilename.replaceAll(
                     originalFilename.substring(originalFilename.lastIndexOf(".")), ".webp");
             return "compressed_" + userId + "$DOC-" + documentId + "$" + newFileName;
@@ -341,6 +341,32 @@ public class HelperService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String strDate = formatter.format(date);
         return strDate;
+    }
+
+    public Map<Boolean, String> validatePassword(String password) {
+        Map<Boolean, String> validationMap = new HashMap<>();
+        Map<String, Integer> charCountsMap = new HashMap<>();
+        for (Character c : password.toCharArray()) {
+            if (Character.isLetter(c))
+                charCountsMap.put(AppConstants.CHAR, charCountsMap.getOrDefault(AppConstants.CHAR, 0) + 1);
+            else if (Character.isDigit(c))
+                charCountsMap.put(AppConstants.DIGIT, charCountsMap.getOrDefault(AppConstants.DIGIT, 0) + 1);
+            else if (Character.isWhitespace(c))
+                charCountsMap.put(AppConstants.WHITESPACE, charCountsMap.getOrDefault(AppConstants.WHITESPACE, 0) + 1);
+            else
+                charCountsMap.put(AppConstants.SPECIAL, charCountsMap.getOrDefault(AppConstants.SPECIAL, 0) + 1);
+        }
+        for (Map.Entry<String, Integer> entry : charCountsMap.entrySet()) {
+            if (entry.getKey().equals(AppConstants.WHITESPACE) && entry.getValue() > 0) {
+                validationMap.put(false, ErrorMessage.PASSWORD_CONTAINS_WHITESPACE.getMessage());
+                return validationMap;
+            } else if (entry.getValue() == 0) {
+                validationMap.put(false, ErrorMessage.PWD_CHAR_COUNTS_NOT_VALID.getMessage()
+                        + entry.getKey() + " character");
+                return validationMap;
+            }
+        }
+        return validationMap;
     }
 
 //    public String encryption(String strToEncrypt) {

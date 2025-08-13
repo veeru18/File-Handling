@@ -1,8 +1,7 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import com.wecodee.file_handling.upload.entity.Document;
 import com.wecodee.file_handling.upload.repository.DocumentRepository;
-import com.wecodee.file_handling.upload.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

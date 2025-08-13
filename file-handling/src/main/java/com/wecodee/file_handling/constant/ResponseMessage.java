@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,10 @@ public enum ResponseMessage {
     NO_SUCH_ALGORITHM_ERROR("General Security Error, no algorithm could be found for specified string"),
     DOC_COMPARE_FAILED("Documents comparison has failed, mostly due to empty/invalid byte data"),
     INTERNAL_SERVER_ERROR("Internal server error, runtime exception occurred, please check logs!"),
-    IMAGE_EXIST_BY_SAME_DATA("Image upload failed, due to same DataContent check b/w existing image and uploaded one");
+    IMAGE_EXIST_BY_SAME_DATA("Image upload failed, due to same DataContent check b/w existing image and uploaded one"),
+
+    USER_REGISTER_SUCCESS("User Registered Successfully"),
+    USER_LOGIN_SUCCESS("User Logged in Successfully");
 
     private final String message;
 

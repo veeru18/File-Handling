@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

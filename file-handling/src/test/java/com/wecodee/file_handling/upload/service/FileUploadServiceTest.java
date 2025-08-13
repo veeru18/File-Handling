@@ -24,7 +24,7 @@ public class FileUploadServiceTest {
     @BeforeEach
     void setUp() {
         // manually set the @Value field
-        ReflectionTestUtils.setField(fileUploadService, "uploadDirectory", "./resources/static/docs");
+        ReflectionTestUtils.setField(fileUploadService, "uploadDirectory", "./resources/static/images");
     }
 
     @Test

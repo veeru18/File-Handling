@@ -11,12 +11,14 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-    @NotNull(message = "Username should be available in payload")
-    @NotEmpty(message = "Username should not be Empty")
+public class UserDetailsDTO {
+    private Long id;
     private String username;
-    @NotNull(message = "Number should be available in payload")
-    @NotEmpty(message = "Number should not be Empty")
-    @Length(min = 8, max = 15, message = "PhoneNumber should be in range of 8 and 15 chars")
     private String phoneNumber;
+//    private String email;
+
+    public UserDetailsDTO(String username, String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        this.username = username;
+    }
 }

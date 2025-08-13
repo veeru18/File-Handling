@@ -1,7 +1,7 @@
 package com.wecodee.file_handling.upload.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wecodee.file_handling.upload.constant.*;
+import com.wecodee.file_handling.constant.*;
 import com.wecodee.file_handling.upload.dto.DocumentDTO;
 import com.wecodee.file_handling.upload.entity.Document;
 import com.wecodee.file_handling.upload.exceptions.FileNotFoundException;
@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service

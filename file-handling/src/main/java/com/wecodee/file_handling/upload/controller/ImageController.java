@@ -1,7 +1,7 @@
 package com.wecodee.file_handling.upload.controller;
 
 
-import com.wecodee.file_handling.upload.constant.ApiResponse;
+import com.wecodee.file_handling.constant.ApiResponse;
 import com.wecodee.file_handling.upload.service.ImageService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

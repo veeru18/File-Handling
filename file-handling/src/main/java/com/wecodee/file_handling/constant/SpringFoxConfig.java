@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 
 import org.springframework.context.annotation.Bean;

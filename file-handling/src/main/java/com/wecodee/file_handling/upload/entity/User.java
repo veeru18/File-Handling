@@ -20,6 +20,9 @@ public class User {
     private Long id;
     private String username;
     private String phoneNumber;
+    @Column(name = "EMAIL", unique = true)
+    private String email;
+    private String password;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,
@@ -37,6 +40,8 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
                 ", documents=" + documents +
                 ", images=" + images +
                 '}';

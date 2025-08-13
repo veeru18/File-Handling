@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +20,10 @@ public abstract class AppConstants {
             ".png", 1, ".jpg", 2,
             ".jpeg", 3, ".gif", 4,
             ".webp", 5);
+
+    public static final String CHAR = "Character";
+    public static final String DIGIT = "Digit";
+    public static final String SPECIAL = "Special";
+    public static final String WHITESPACE = "Whitespace";
 
 }

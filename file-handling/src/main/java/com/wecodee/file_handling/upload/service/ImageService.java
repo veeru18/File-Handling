@@ -1,7 +1,7 @@
 package com.wecodee.file_handling.upload.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wecodee.file_handling.upload.constant.*;
+import com.wecodee.file_handling.constant.*;
 import com.wecodee.file_handling.upload.dto.ImageDTO;
 import com.wecodee.file_handling.upload.entity.Image;
 import com.wecodee.file_handling.upload.entity.User;

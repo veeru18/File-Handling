@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import com.wecodee.file_handling.upload.exceptions.*;
 import net.minidev.json.JSONObject;

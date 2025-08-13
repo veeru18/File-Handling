@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,13 @@ public enum ErrorMessage {
     ENCODED_DATA_EMPTY_ERROR("Encoded Data is blank/empty among the two"),
     IMAGE_ALREADY_EXISTS("Image already exists by same data content"),
     FILE_NOT_FOUND("File was not found by ID in the database"),
-    FILE_REQUEST_DATA_EMPTY("File Request data is empty, please check logs");
+    FILE_REQUEST_DATA_EMPTY("File Request data is empty, please check logs"),
+    REQUEST_DATA_EMPTY("Request Object's data is empty, please send valid data"),
+    USER_EXISTS_ERROR("User already exists by the provided email, please try login!"),
+    PASSWORD_CONTAINS_WHITESPACE("Password Contains Whitespace"),
+    PWD_CHAR_COUNTS_NOT_VALID("Password must contain atleast 1 "),
+    INVALID_PASSWORD_ENTERED("Invalid Password was entered for login, please retry!"),
+    USER_NOT_FOUND_BY_EMAIL("User not found by email, Please provide valid registered email");
 
     private final String message;
 }

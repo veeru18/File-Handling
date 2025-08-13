@@ -1,4 +1,4 @@
-package com.wecodee.file_handling.upload.constant;
+package com.wecodee.file_handling.constant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
