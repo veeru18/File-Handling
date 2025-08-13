@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 
 @NoArgsConstructor
-@AllArgsConstructor @Data
+@AllArgsConstructor
+@Data
 public class ImageDTO {
     private Long imageId;
     private String imageData; // storing it as byte[]/aka clob

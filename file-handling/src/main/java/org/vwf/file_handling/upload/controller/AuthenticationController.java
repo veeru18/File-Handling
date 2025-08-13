@@ -1,8 +1,5 @@
 package org.vwf.file_handling.upload.controller;
 
-import org.vwf.file_handling.upload.constant.ApiResponse;
-import org.vwf.file_handling.upload.dto.LoginRegisterDTO;
-import org.vwf.file_handling.upload.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -11,6 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.vwf.file_handling.upload.constant.ApiResponse;
+import org.vwf.file_handling.upload.dto.LoginRegisterDTO;
+import org.vwf.file_handling.upload.service.AuthenticationService;
 
 import javax.validation.Valid;
 

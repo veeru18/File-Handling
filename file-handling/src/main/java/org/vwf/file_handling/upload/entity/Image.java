@@ -2,7 +2,6 @@ package org.vwf.file_handling.upload.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "UF_IMAGES")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Image {

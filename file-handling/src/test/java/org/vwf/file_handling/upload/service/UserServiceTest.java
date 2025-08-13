@@ -1,14 +1,5 @@
 package org.vwf.file_handling.upload.service;
 
-import org.vwf.file_handling.upload.constant.ApiResponse;
-import org.vwf.file_handling.upload.constant.ResponseMessage;
-import org.vwf.file_handling.upload.dto.UserDetailsDTO;
-import org.vwf.file_handling.upload.entity.User;
-import org.vwf.file_handling.upload.exceptions.UserDeleteException;
-import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
-import org.vwf.file_handling.upload.exceptions.UserSaveException;
-import org.vwf.file_handling.upload.exceptions.UserUpdateException;
-import org.vwf.file_handling.upload.repository.UserRepository;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +9,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vwf.file_handling.upload.constant.ApiResponse;
+import org.vwf.file_handling.upload.constant.ResponseMessage;
+import org.vwf.file_handling.upload.dto.UserDetailsDTO;
+import org.vwf.file_handling.upload.entity.User;
+import org.vwf.file_handling.upload.exceptions.UserDeleteException;
+import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
+import org.vwf.file_handling.upload.exceptions.UserSaveException;
+import org.vwf.file_handling.upload.exceptions.UserUpdateException;
+import org.vwf.file_handling.upload.repository.UserRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,10 +101,10 @@ public class UserServiceTest {
     @Test
     void updateUser_throwsUserUpdateException() {
         log.info("Inside updateUser_throwsUserUpdateException");
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO("Yo","9916548890");
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO("Yo", "9916548890");
 
-        assertThrows(UserUpdateException.class, ()-> userService.updateUser(1L,null));
-        assertThrows(UserUpdateException.class, ()-> userService.updateUser(null, userDetailsDTO));
+        assertThrows(UserUpdateException.class, () -> userService.updateUser(1L, null));
+        assertThrows(UserUpdateException.class, () -> userService.updateUser(null, userDetailsDTO));
     }
 
     @Test
@@ -122,12 +122,12 @@ public class UserServiceTest {
         List<Long> longs = List.of(1L, 3L, 5L, 7L);
         // when() is static method of Mockito to test based on certain cases
         // that stubs(pushes) its required responses from its Autowired dependencies like thenThrow, thenReturn
-        when(userRepository.findById(argThat(id->id!=null&&longs.contains(id)))).thenThrow(UserDeleteException.class);
-        when(userRepository.findById(argThat(id->(id!=null&&id%2==0)))).thenReturn(Optional.of(mockUser));
+        when(userRepository.findById(argThat(id -> id != null && longs.contains(id)))).thenThrow(UserDeleteException.class);
+        when(userRepository.findById(argThat(id -> (id != null && id % 2 == 0)))).thenReturn(Optional.of(mockUser));
         // for null id passed
         // based on when() conditions, tests are done using these Assertions class methods
-        assertThrows(UserDeleteException.class, ()->userService.deleteUser(null));
-        assertThrows(UserDeleteException.class, ()->userService.deleteUser(1L));
+        assertThrows(UserDeleteException.class, () -> userService.deleteUser(null));
+        assertThrows(UserDeleteException.class, () -> userService.deleteUser(1L));
         assertEquals(apiResponse, userService.deleteUser(2L));
     }
 }

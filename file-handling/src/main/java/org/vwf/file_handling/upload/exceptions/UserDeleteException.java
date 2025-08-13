@@ -1,6 +1,6 @@
 package org.vwf.file_handling.upload.exceptions;
 
-public class UserDeleteException extends RuntimeException{
+public class UserDeleteException extends RuntimeException {
 
     public UserDeleteException(String message) {
         super(message);

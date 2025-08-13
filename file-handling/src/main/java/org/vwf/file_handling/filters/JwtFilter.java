@@ -1,7 +1,5 @@
 package org.vwf.file_handling.filters;
 
-import org.vwf.file_handling.upload.repository.UserRepository;
-import org.vwf.file_handling.security.CustomUserDetailService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +12,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.vwf.file_handling.security.CustomUserDetailService;
+import org.vwf.file_handling.upload.repository.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -82,7 +82,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws RuntimeException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
-        if (pathMatcher.match("/swagger-ui.html", request.getServletPath()) ) {
+        if (pathMatcher.match("/swagger-ui.html", request.getServletPath())) {
 //                || pathMatcher.match("/authenticate/login", request.getServletPath())
 //                || pathMatcher.match("/authenticate/register", request.getServletPath())) {
             return true;

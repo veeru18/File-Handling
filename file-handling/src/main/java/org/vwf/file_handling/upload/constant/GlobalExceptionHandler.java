@@ -17,28 +17,28 @@ public class GlobalExceptionHandler {
 
     // -------------------- user related exceptions ------------------------
     @ExceptionHandler(UserSaveException.class)
-    public ApiResponse<JSONObject> handleUserSaveException(UserSaveException e){
+    public ApiResponse<JSONObject> handleUserSaveException(UserSaveException e) {
         log.warn("Inside handleUserSaveException Handler");
         return ApiResponse.failure(ResponseMessage.USER_SAVE_FAILED.getMessage(), ErrorCodes.FH_USER_SAVE_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ApiResponse<JSONObject> handleUserNotFoundException(UserNotFoundException e){
+    public ApiResponse<JSONObject> handleUserNotFoundException(UserNotFoundException e) {
         log.warn("Inside handleUserNotFoundException Handler");
         return ApiResponse.failure(ResponseMessage.USER_FETCH_FAILED.getMessage(), ErrorCodes.FH_USER_FETCH_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
     @ExceptionHandler(UserUpdateException.class)
-    public ApiResponse<JSONObject> handleUserUpdateException(UserUpdateException e){
+    public ApiResponse<JSONObject> handleUserUpdateException(UserUpdateException e) {
         log.warn("Inside handleUserUpdateException Handler");
         return ApiResponse.failure(ResponseMessage.USER_UPDATE_FAILED.getMessage(), ErrorCodes.FH_USER_UPDATE_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
     }
 
     @ExceptionHandler(UserDeleteException.class)
-    public ApiResponse<JSONObject> handleUserDeleteException(UserDeleteException e){
+    public ApiResponse<JSONObject> handleUserDeleteException(UserDeleteException e) {
         log.warn("Inside handleUserDeleteException Handler");
         return ApiResponse.failure(ResponseMessage.USER_DELETE_FAILED.getMessage(), ErrorCodes.FH_USER_DELETE_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ImageAlreadyExistsException.class)
-    public ApiResponse<JSONObject> handleImageAlreadyExistsException(ImageAlreadyExistsException e){
+    public ApiResponse<JSONObject> handleImageAlreadyExistsException(ImageAlreadyExistsException e) {
         log.warn("Inside handleImageAlreadyExistsException Handler");
         return ApiResponse.failure(ResponseMessage.IMAGE_EXIST_BY_SAME_DATA.getMessage(), ErrorCodes.FH_IMG_UPLOAD_FAIL.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ApiResponse<JSONObject> handleRuntimeException(RuntimeException e){
+    public ApiResponse<JSONObject> handleRuntimeException(RuntimeException e) {
         log.error("Inside handleRuntimeException Handler", e);
         return ApiResponse.failure(ResponseMessage.INTERNAL_SERVER_ERROR.getMessage(), ErrorCodes.FH_INTERNAL_SERVER_ERROR.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
