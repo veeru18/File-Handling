@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/file-uploader")
@@ -22,7 +24,7 @@ public class FileUploadController {
     private final FileUploadService fileUploadService;
 
     @PostMapping("/upload/{userId}")
-    public ApiResponse<JSONObject> uploadFile(@PathVariable Long userId, @RequestParam(name = "file") MultipartFile multipartFile) {
+    public ApiResponse<JSONObject> uploadFile(@PathVariable Long userId, @RequestParam(name = "file") MultipartFile multipartFile) throws IOException {
         return fileUploadService.uploadFile(userId, multipartFile);
     }
 

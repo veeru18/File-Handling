@@ -31,18 +31,18 @@ public class SpringFoxConfig implements WebMvcConfigurer {
     }
 
     private ApiInfo apiDetails() {
-        return new ApiInfo("WeCodee File Handling",
-                "WeCodee File Handling API details",
+        return new ApiInfo("VFile Handling",
+                "VFile Handling API details",
                 "1.0", "www.wecodee.com",
                 contact(),
-                "", "www.wecodee.com", Collections.emptyList());
+                "", "", Collections.emptyList());
     }
 
     private Contact contact() {
         return new Contact(
-                "WeCodee",
-                "https://www.wecodee.com/#/wecodee/home",
-                "support@wecodee.com");
+                "Veeresh",
+                "https://github.com/veeru18",
+                "veeresh.ta@gmail.com");
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,15 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public ApiResponse<JSONObject> saveUser(@RequestBody UserDTO userDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        Cookie cookie = new Cookie("niqq","someNigga");
-        cookie.setMaxAge(60*60);
-
-        ResponseEntity<String> hello = ResponseEntity
-                .status(HttpStatus.OK)
-                .header(cookie.getName(),cookie.getValue())
-                .body("hello");
+    public ApiResponse<JSONObject> saveUser(@RequestBody @Valid UserDTO userDTO) {
         return userService.saveUser(userDTO);
     }
 
@@ -42,7 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/user/{userId}")
-    public ApiResponse<JSONObject> updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
+    public ApiResponse<JSONObject> updateUser(@PathVariable Long userId, @RequestBody @Valid UserDTO userDTO) {
         return userService.updateUser(userId,userDTO);
     }
 
