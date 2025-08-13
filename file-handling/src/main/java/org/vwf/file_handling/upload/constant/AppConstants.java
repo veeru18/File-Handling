@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor @Getter
+@RequiredArgsConstructor
+@Getter
 public abstract class AppConstants {
     public static final String
             FILE = "FILE",

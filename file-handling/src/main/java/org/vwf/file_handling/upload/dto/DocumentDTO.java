@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 
 @NoArgsConstructor
-@AllArgsConstructor @Data
+@AllArgsConstructor
+@Data
 public class DocumentDTO {
     private Long documentId;
     private String originalFileName;

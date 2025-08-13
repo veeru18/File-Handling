@@ -1,13 +1,6 @@
 package org.vwf.file_handling.upload.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.vwf.file_handling.upload.constant.*;
-import org.vwf.file_handling.upload.dto.ImageDTO;
-import org.vwf.file_handling.upload.entity.Image;
-import org.vwf.file_handling.upload.entity.User;
-import org.vwf.file_handling.upload.exceptions.*;
-import org.vwf.file_handling.upload.repository.ImageRepository;
-import org.vwf.file_handling.upload.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.vwf.file_handling.upload.constant.*;
+import org.vwf.file_handling.upload.dto.ImageDTO;
+import org.vwf.file_handling.upload.entity.Image;
+import org.vwf.file_handling.upload.entity.User;
+import org.vwf.file_handling.upload.exceptions.*;
+import org.vwf.file_handling.upload.repository.ImageRepository;
+import org.vwf.file_handling.upload.repository.UserRepository;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;

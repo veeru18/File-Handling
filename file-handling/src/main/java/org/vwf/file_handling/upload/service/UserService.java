@@ -1,5 +1,12 @@
 package org.vwf.file_handling.upload.service;
 
+import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.vwf.file_handling.upload.constant.ApiResponse;
 import org.vwf.file_handling.upload.constant.ErrorMessage;
 import org.vwf.file_handling.upload.constant.HelperService;
@@ -11,13 +18,6 @@ import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
 import org.vwf.file_handling.upload.exceptions.UserSaveException;
 import org.vwf.file_handling.upload.exceptions.UserUpdateException;
 import org.vwf.file_handling.upload.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.Objects;
 

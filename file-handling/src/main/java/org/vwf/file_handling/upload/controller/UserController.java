@@ -1,14 +1,14 @@
 package org.vwf.file_handling.upload.controller;
 
-import org.vwf.file_handling.upload.constant.ApiResponse;
-import org.vwf.file_handling.upload.dto.UserDetailsDTO;
-import org.vwf.file_handling.upload.service.UserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import org.vwf.file_handling.upload.constant.ApiResponse;
+import org.vwf.file_handling.upload.dto.UserDetailsDTO;
+import org.vwf.file_handling.upload.service.UserService;
 
 @RestController
 @RequiredArgsConstructor

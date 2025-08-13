@@ -1,8 +1,8 @@
 package org.vwf.file_handling.upload.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.vwf.file_handling.upload.entity.Document;
 import org.springframework.data.jpa.repository.Query;
+import org.vwf.file_handling.upload.entity.Document;
 
 import java.util.stream.Stream;
 

@@ -1,13 +1,13 @@
 package org.vwf.file_handling.upload.constant;
 
-import org.vwf.file_handling.upload.entity.Document;
-import org.vwf.file_handling.upload.repository.DocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+import org.vwf.file_handling.upload.entity.Document;
+import org.vwf.file_handling.upload.repository.DocumentRepository;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

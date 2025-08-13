@@ -10,7 +10,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "UF_DOCUMENTS")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Document {

@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class FileHandlingApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FileHandlingApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FileHandlingApplication.class, args);
+    }
 
 }

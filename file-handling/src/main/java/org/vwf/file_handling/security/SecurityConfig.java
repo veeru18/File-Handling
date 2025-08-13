@@ -1,6 +1,5 @@
 package org.vwf.file_handling.security;
 
-import org.vwf.file_handling.filters.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.vwf.file_handling.filters.JwtFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,9 +26,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomUserDetailService customUserDetailService;
 
-    private static final String[] PUBLIC_GET_URLS = new String[] {
+    private static final String[] PUBLIC_GET_URLS = new String[]{
     };
-    private static final String[] PUBLIC_POST_URLS = new String[] {
+    private static final String[] PUBLIC_POST_URLS = new String[]{
             "/authenticate/login",
             "/authenticate/register",
             "/swagger-ui.html"
@@ -65,11 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeHttpRequests()
                 .antMatchers(HttpMethod.POST, PUBLIC_POST_URLS).permitAll()
                 .antMatchers(HttpMethod.POST, PUBLIC_GET_URLS).permitAll()
-                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().csrf(csrf->csrf.disable())
+                .and().csrf(csrf -> csrf.disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
