@@ -146,13 +146,10 @@ public class ImageService {
 
     public ResponseEntity<InputStreamResource> getFile(Long userId, Long imageId, String disType) {
         log.info("Inside getFile method..");
-//        try {
         if (!userRepository.existsById(userId))
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND.getMessage()));
-//            String fileLocation = image.getFileLocation();
-//            Path compressedFilePath = Paths.get(fileLocation);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(image.getImageType()));
@@ -163,9 +160,5 @@ public class ImageService {
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
                 .body(new InputStreamResource(byteArrayInputStream));
-//        } catch (Exception e) {
-//            log.info("exception in getFile method", e);
-//            return ResponseEntity.badRequest().body(null);
-//        }
     }
 }

@@ -22,12 +22,12 @@ public class DocScheduledJob {
 
     private final DocumentRepository documentRepository;
 
-    // everyday at 5am (or)  "0 5 * * 6,7" every sat and sun @5am
-    @Scheduled(cron = "0 5 * * *")
+    // everyday at 5am (or)  "0 0 5 * * 6,7" every sat and sun @5am
+    @Scheduled(cron = "0 0 5 * * *")
     @Transactional
     public void removeDocEntitiesDaily() {
         log.info("Inside removeDocEntitiesDaily method");
-        // if a file doesn't exists for a given saved record's path, then deleting it by
+        // if a file doesn't exist for a given saved record's path, then deleting it by ID
         AtomicInteger count = new AtomicInteger(0);
         try (Stream<Document> docStream = documentRepository.streamAllDocuments()) {
             docStream.forEach(doc -> {
@@ -43,7 +43,7 @@ public class DocScheduledJob {
                         documentRepository.flush();
                 } catch (Exception e) {
                     // log and delete the record if path is invalid
-                    log.info("Exception during delete of a record with id {} : {}", doc.getDocumentId(), e.getMessage());
+                    log.error("Exception during delete of a record with id {} : {}", doc.getDocumentId(), e.getMessage());
                     documentRepository.deleteById(doc.getDocumentId());
                 }
             });

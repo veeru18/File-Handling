@@ -86,6 +86,15 @@ public class HelperService {
         }
     }
 
+    public static String generateStoredFileName(Long userId, Long documentId, String originalFilename, String mediaType) {
+        if(mediaType.startsWith("image/")) {
+            String newFileName = originalFilename.replaceAll(
+                    originalFilename.substring(originalFilename.lastIndexOf(".")), ".webp");
+            return "compressed_" + userId + "$DOC-" + documentId + "$" + newFileName;
+        }
+        return "compressed_" + userId + "$DOC-" + documentId + "$" + originalFilename;
+    }
+
     public InputStreamResource readFromFile(Long userId, Path compressedFilePath, String originalFileName) {
         log.info("Inside readFromFile method");
         try {
@@ -124,7 +133,7 @@ public class HelperService {
         log.info("original file size: {} MB", originalSize);
         byte[] compressedFile;
         // keeping 100kb as limit to compress
-        if (originalSize > 0.1) {
+        if (originalSize > 1.0) {
             compressedFile = compressData(fileBytes);
             double compressedSize = findUploadedDataSizeInMb(compressedFile);
             log.info("compressed data size: {} MB", compressedSize);
