@@ -6,8 +6,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.vwf.file_handling.filters.JwtTokenUtils;
 import org.vwf.file_handling.security.CustomUserDetail;
@@ -32,7 +34,7 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final JwtTokenUtils jwtTokenUtils;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
     private final HelperService helperService;
@@ -49,7 +51,7 @@ public class AuthenticationService {
         Map<Boolean, String> validated = helperService.validatePassword(registerDto.getPassword());
         if (ObjectUtils.isNotEmpty(validated))
             throw new PasswordValidationFailException(validated.get(false));
-        String encoded = bCryptPasswordEncoder.encode(registerDto.getPassword());
+        String encoded = passwordEncoder.encode(registerDto.getPassword());
         mappedUser.setPassword(encoded);
         User savedUser = userRepository.save(mappedUser);
         RegisterResponse registerResponse = modelMapper.map(savedUser, RegisterResponse.class);
@@ -63,7 +65,9 @@ public class AuthenticationService {
             throw new InvalidRequestDataException(ErrorMessage.REQUEST_DATA_EMPTY.getMessage());
         User existUser = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL.getMessage()));
-        /* 1st way of handling the validation of loginRequest creating auth object after using userService.loadbyusername */
+        /*
+        1st way of handling the validation of loginRequest creating auth object after using userService.loadbyusername
+        */
 //        Authentication authentication = authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(
 //                        loginDto.getEmail(),
@@ -76,8 +80,10 @@ public class AuthenticationService {
 //        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
 //        String tokenByAuthObj = jwtTokenUtils.generateToken(userDetail);
 
-        /* 2nd way of handling the validation of loginRequest validating  */
-        if (!bCryptPasswordEncoder.matches(loginDto.getPassword(), existUser.getPassword())) {
+        /*
+        2nd way of handling the validation of loginRequest validating
+        */
+        if (!passwordEncoder.matches(loginDto.getPassword(), existUser.getPassword())) {
             throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD_ENTERED.getMessage());
         }
         // token generated is being sent here

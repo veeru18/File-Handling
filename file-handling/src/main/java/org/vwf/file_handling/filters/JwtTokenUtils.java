@@ -3,14 +3,11 @@ package org.vwf.file_handling.filters;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.vwf.file_handling.upload.constant.HelperService;
 
 import java.util.Date;
@@ -18,10 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Component
 public class JwtTokenUtils {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -45,7 +39,7 @@ public class JwtTokenUtils {
         return claimsResolver.apply(claims);
     }
 
-    // for retrieveing any information from token we will need the secret key
+    // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
