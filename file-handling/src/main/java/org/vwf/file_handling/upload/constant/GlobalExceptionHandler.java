@@ -3,6 +3,7 @@ package org.vwf.file_handling.upload.constant;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.vwf.file_handling.upload.exceptions.*;
@@ -10,6 +11,7 @@ import org.vwf.file_handling.upload.exceptions.*;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -88,6 +90,13 @@ public class GlobalExceptionHandler {
         log.error("Inside handleIOException Handler", e);
         return ApiResponse.failure(ResponseMessage.IO_EXCEPTION_FAILURE.getMessage(), ErrorCodes.FH_IO_EXCEPTION.getErrorCode(),
                 new JSONObject(Map.of("exceptionMessage", e.getMessage())));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiResponse<JSONObject> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("Inside handleMethodArgumentNotValidException Handler", e);
+        return ApiResponse.failure(ResponseMessage.REQUEST_VALIDATIONS_FAILED.getMessage(), ErrorCodes.FH_DTO_VALIDATION_FAIL.getErrorCode(),
+                new JSONObject(Map.of("exceptionMessage", Objects.requireNonNull(e.getFieldError().getDefaultMessage()))));
     }
 
     @ExceptionHandler(NoSuchAlgorithmException.class)

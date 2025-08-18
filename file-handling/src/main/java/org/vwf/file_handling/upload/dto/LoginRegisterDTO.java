@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Data
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginRegisterDTO {
     @NotEmpty(message = "EmailId is required")
+    @Email(message = "Please pass a valid email ID")
     private String email;
     @NotEmpty(message = "Password is required")
     private String password;

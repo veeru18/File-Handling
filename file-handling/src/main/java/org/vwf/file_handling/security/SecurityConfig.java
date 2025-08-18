@@ -26,12 +26,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomUserDetailService customUserDetailService;
 
+    private static final String[] PUBLIC_URLS = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v2/api-docs",
+//            "/v3/api-docs",
+            "/webjars/**"
+    };
     private static final String[] PUBLIC_GET_URLS = new String[]{
     };
     private static final String[] PUBLIC_POST_URLS = new String[]{
             "/authenticate/login",
-            "/authenticate/register",
-            "/swagger-ui.html"
+            "/authenticate/register"
     };
 
     // newer approach wouldn't need this as the webSecConfigAdapter wasn't extended
@@ -63,6 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests()
+                .antMatchers(PUBLIC_URLS).permitAll()
                 .antMatchers(HttpMethod.POST, PUBLIC_POST_URLS).permitAll()
                 .antMatchers(HttpMethod.POST, PUBLIC_GET_URLS).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

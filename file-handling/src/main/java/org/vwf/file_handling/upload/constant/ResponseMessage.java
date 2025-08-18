@@ -37,7 +37,8 @@ public enum ResponseMessage {
     IMAGE_EXIST_BY_SAME_DATA("Image upload failed, due to same DataContent check b/w existing image and uploaded one"),
 
     USER_REGISTER_SUCCESS("User Registered Successfully"),
-    USER_LOGIN_SUCCESS("User Logged in Successfully");
+    USER_LOGIN_SUCCESS("User Logged in Successfully"),
+    REQUEST_VALIDATIONS_FAILED("Request DTOs' validation has failed, please check the logs!");
 
     private final String message;
 

@@ -82,12 +82,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws RuntimeException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
-        if (pathMatcher.match("/swagger-ui.html", request.getServletPath())) {
-//                || pathMatcher.match("/authenticate/login", request.getServletPath())
-//                || pathMatcher.match("/authenticate/register", request.getServletPath())) {
-            return true;
-        }
-        return false;
+        String servletPath = request.getServletPath();
+        return pathMatcher.match("/swagger-ui.html", servletPath) ||
+                pathMatcher.match("/swagger-ui/**", servletPath) ||
+                pathMatcher.match("/swagger-resources/**", servletPath) ||
+                pathMatcher.match("/v2/api-docs", servletPath) ||
+                pathMatcher.match("/v3/api-docs", servletPath) ||
+                pathMatcher.match("/webjars/**", servletPath) ||
+                pathMatcher.match("/authenticate/login", servletPath) ||
+                pathMatcher.match("/authenticate/register", servletPath);
     }
 
     public String getRequestBodyData(BufferedReader reader) {

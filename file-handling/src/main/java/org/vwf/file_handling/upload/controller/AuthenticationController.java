@@ -1,5 +1,6 @@
 package org.vwf.file_handling.upload.controller;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/authenticate")
 @RequiredArgsConstructor
+@Api(tags = "Authentication Handler", description = "Authentication APIs like login/register")
 public class AuthenticationController {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
