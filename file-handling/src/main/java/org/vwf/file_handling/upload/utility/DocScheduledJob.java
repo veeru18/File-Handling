@@ -1,4 +1,4 @@
-package org.vwf.file_handling.upload.constant;
+package org.vwf.file_handling.upload.utility;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package org.vwf.file_handling.upload.constant;
+package org.vwf.file_handling.upload.utility;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

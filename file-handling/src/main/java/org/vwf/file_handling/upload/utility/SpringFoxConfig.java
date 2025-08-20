@@ -1,4 +1,4 @@
-package org.vwf.file_handling.upload.constant;
+package org.vwf.file_handling.upload.utility;
 
 
 import org.springframework.context.annotation.Bean;
@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
@@ -27,7 +29,12 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                 .paths(PathSelectors.ant("/**"))
                 .apis(RequestHandlerSelectors.any())
                 .build().apiInfo(apiDetails())
-                .groupName("ADMIN_USER");
+                .groupName("ADMIN_USER")
+                .globalOperationParameters(
+                        Collections.singletonList(
+                                new ParameterBuilder().name("Authorization")
+                                        .description("Use Bearer <token> here")
+                                        .modelRef(new ModelRef("String")).parameterType("header").required(false).build()));
     }
 
     private ApiInfo apiDetails() {

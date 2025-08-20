@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.vwf.file_handling.upload.constant.HelperService;
+import org.vwf.file_handling.upload.utility.HelperService;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtTokenUtils {
+public class TokenUtils {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${jwt.secret}")

@@ -1,4 +1,4 @@
-package org.vwf.file_handling.upload.constant;
+package org.vwf.file_handling.upload.utility;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.vwf.file_handling.upload.constant.AppConstants;
+import org.vwf.file_handling.upload.constant.ErrorMessage;
 import org.vwf.file_handling.upload.exceptions.InvalidContentTypeException;
 import org.vwf.file_handling.upload.exceptions.InvalidFormatTypeException;
 
@@ -21,7 +23,12 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +36,13 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -361,67 +374,4 @@ public class HelperService {
         return validationMap;
     }
 
-//    public String encryption(String strToEncrypt) {
-//        log.debug("encryption method is executing..");
-//        try {
-//            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//            IvParameterSpec ivspec = new IvParameterSpec(iv);
-//            // Create SecretKeyFactory object
-//            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-//            // Create KeySpec object and assign with
-//            // constructor
-//            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-//            SecretKey tmp = factory.generateSecret(spec);
-//            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-//
-//            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-//            // Return encrypted string
-//            String encryptedString = Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
-//            System.out.println(" encrypted string = " + encryptedString);
-//            return encryptedString;
-//        } catch (Exception e) {
-//            log.error(" exception in encryption " + e);
-//            return null;
-//        }
-//    }
-//
-//    public String decryption(String strToDecrypt) {
-//        log.debug("decryption method is executing.. ");
-//        try {
-//            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0,
-//                    0, 0, 0, 0, 0, 0, 0, 0};
-//            // Create IvParameterSpec object and assign with
-//            // constructor
-//            IvParameterSpec ivspec
-//                    = new IvParameterSpec(iv);
-//
-//            // Create SecretKeyFactory Object
-//            SecretKeyFactory factory
-//                    = SecretKeyFactory.getInstance(
-//                    "PBKDF2WithHmacSHA256");
-//
-//            // Create KeySpec object and assign with
-//            // constructor
-//            KeySpec spec = new PBEKeySpec(
-//                    SECRET_KEY.toCharArray(), SALT.getBytes(),
-//                    65536, 256);
-//            SecretKey tmp = factory.generateSecret(spec);
-//            SecretKeySpec secretKey = new SecretKeySpec(
-//                    tmp.getEncoded(), "AES");
-//
-//            Cipher cipher = Cipher.getInstance(
-//                    "AES/CBC/PKCS5PADDING");
-//            //AES/CBC/PKCS5Padding
-//            cipher.init(Cipher.DECRYPT_MODE, secretKey,
-//                    ivspec);
-//            // Return decrypted string
-//            String decryptedString = new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-//            System.out.println(" decrypted string " + decryptedString);
-//            return decryptedString;
-//        } catch (Exception e) {
-//            log.error(" exception in decryption method " + e);
-//            return null;
-//        }
-//    }
 }
