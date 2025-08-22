@@ -36,9 +36,10 @@ public class DocScheduledJob {
                     boolean missingFile = location == null || location.isBlank()
                             || !Files.isRegularFile(Path.of(location));
 
-                    if (missingFile)
+                    if (missingFile) {
                         documentRepository.deleteById(doc.getDocumentId());
-
+                        log.info("Removed record: {}", doc.getDocumentId());
+                    }
                     if (count.incrementAndGet() % 50 == 0)
                         documentRepository.flush();
                 } catch (Exception e) {

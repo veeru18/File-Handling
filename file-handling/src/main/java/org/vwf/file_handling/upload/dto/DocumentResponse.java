@@ -17,7 +17,6 @@ public class DocumentResponse {
     private String fileType;
     @NotEmpty(message = "FileLocation is required")
     private String fileLocation; //storing it as file in a disk drive memory location
-//    private String extension;
 
     // newer fields outside of entity
     private double compressionTime;

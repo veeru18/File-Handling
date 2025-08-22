@@ -3,7 +3,6 @@ package org.vwf.file_handling.upload.controller;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
@@ -15,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.vwf.file_handling.filters.JwtFilter;
 import org.vwf.file_handling.upload.constant.GenericResponse;
-import org.vwf.file_handling.upload.dto.ImageDTO;
+import org.vwf.file_handling.upload.dto.ImageResponse;
 import org.vwf.file_handling.upload.service.ImageService;
 
 @RestController
@@ -30,11 +28,11 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping()
-    public GenericResponse<ImageDTO> imageUpload(@RequestParam("file") MultipartFile multipartFile) throws Exception {
+    public GenericResponse<ImageResponse> imageUpload(@RequestParam("file") MultipartFile multipartFile) throws Exception {
         return imageService.writeImageToDb(multipartFile);
     }
 
-    @GetMapping("/{imageId}/distType/{disType}")
+    @GetMapping("/{imageId}/disType/{disType}")
     public ResponseEntity<InputStreamResource> getFile(@PathVariable("imageId") Long imageId,
                                                        @PathVariable("disType") String disType) {
         return imageService.getFile(imageId, disType);

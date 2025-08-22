@@ -26,7 +26,6 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long imageId;
     @Column(name = "IMAGE_DATA")// insertable, updatable, nullable's default is true
     @Basic(fetch = FetchType.LAZY)// to fetch it only when get() method is called

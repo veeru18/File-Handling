@@ -9,12 +9,14 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ImageDTO {
+public class ImageResponse {
     private Long imageId;
     @NotEmpty(message = "Image Filename is required")
     private String imageFileName;
     @NotEmpty(message = "Image Type is required")
     private String imageType;
-//    private String extension;
 
+    // newer fields outside of entity
+    private double fileWriteTime;
+    private double fileSize;
 }
