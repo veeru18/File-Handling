@@ -2,7 +2,6 @@ package org.vwf.file_handling.upload.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.vwf.file_handling.upload.constant.*;
-import org.vwf.file_handling.upload.dto.DocumentDTO;
+import org.vwf.file_handling.filters.JwtFilter;
+import org.vwf.file_handling.upload.constant.AppConstants;
+import org.vwf.file_handling.upload.constant.ErrorMessage;
+import org.vwf.file_handling.upload.constant.GenericResponse;
+import org.vwf.file_handling.upload.entity.User;
+import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
+import org.vwf.file_handling.upload.utility.HelperService;
+import org.vwf.file_handling.upload.constant.ResponseMessage;
+import org.vwf.file_handling.upload.dto.DocumentResponse;
 import org.vwf.file_handling.upload.entity.Document;
 import org.vwf.file_handling.upload.exceptions.FileNotFoundException;
 import org.vwf.file_handling.upload.exceptions.FileUploadFailException;
@@ -32,8 +38,8 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadService {
-    private static final Logger log = LoggerFactory.getLogger(FileUploadService.class);
+public class DocumentService {
+    private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     @Value("${app.upload.dir}")
     private String uploadDirectory;
@@ -41,17 +47,16 @@ public class FileUploadService {
     private final DocumentRepository documentRepository;
     private final HelperService helperService;
     private final ObjectMapper objectMapper;
+    private final JwtFilter jwtFilter;
     private final UserRepository userRepository;
 
     @Transactional
-    public ApiResponse<JSONObject> uploadFile(Long userId, MultipartFile multipartFile) throws IOException {
-        log.info("Inside uploadFile method, userId:{}", userId);
-        JSONObject responseObject = new JSONObject();
-        if (Stream.of(userId, multipartFile).anyMatch(Objects::isNull) || multipartFile.isEmpty())
+    public GenericResponse<DocumentResponse> uploadFile(MultipartFile multipartFile) throws IOException {
+        log.info("Inside uploadFile method");
+        if (Objects.isNull(multipartFile) || multipartFile.isEmpty())
             throw new FileUploadFailException(ErrorMessage.FILE_REQUEST_DATA_EMPTY.getMessage());
-        if (!userRepository.existsById(userId))
-            throw new FileUploadFailException(ErrorMessage.USER_NOT_FOUND.getMessage());
-//            return ApiResponse.failure(ResponseMessage.DOCUMENT_SAVE_FAILED.getMessage(), responseObject);
+        User user = userRepository.findByEmail(jwtFilter.loggedInUserId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         Document document = new Document();
         // validating its content type(extension) and filename
         HelperService.validateContentTypeAndFilename(multipartFile, AppConstants.FILE);
@@ -62,14 +67,12 @@ public class FileUploadService {
         document.setOriginalFileName(originalFilename);
         // fileName generated here
         Long documentId = documentRepository.getDocumentValue(); //use a sequence to generate
-        String sysGenFilename = HelperService.generateStoredFileName(userId, documentId, originalFilename, mediaType);
+        String sysGenFilename = HelperService.generateStoredFileName(user.getId(), documentId, originalFilename, mediaType);
         document.setStoredFileName(sysGenFilename);
-
-//            String directory = "C:\\Veeresh\\Stored Documents" + "\\";
 
         // to avoid platform dependent seperator
         // generically using /opt/app/uploads path to be platform independent
-        Path path = Paths.get(uploadDirectory, "Stored Documents", String.valueOf(userId), "compressed");
+        Path path = Paths.get(uploadDirectory, "Stored Documents", String.valueOf(user.getId()), "compressed");
         if (!Files.exists(path))
             Files.createDirectories(path);
 
@@ -85,12 +88,12 @@ public class FileUploadService {
             // LZ-77 the encoder algorithm behind the gzip/deflate compression doesn't look at media Type
             // it rearranges bytes arrays and get it corrupted and make the files "unreadable" by OS soft
             // even though it doesn't decompress already compressed data(best for textual data)
-            if (AppConstants.FORMATS_LIST.stream().noneMatch(mediaType::contains))
+            if (AppConstants.FORMATS_LIST.stream().noneMatch(mediaType::contains)) {
+                fileLocation = "compressed_" + fileLocation;
                 compressedFile = helperService.compressFile(multipartFile);
-            else {
-                fileLocation = fileLocation.replaceAll("compressed_", "");
-                compressedFile = multipartFile.getBytes();
             }
+            else
+                compressedFile = multipartFile.getBytes();
         }
         long compressedTime = System.currentTimeMillis();
         // execution for compression in seconds
@@ -106,22 +109,22 @@ public class FileUploadService {
         Document savedDocument = documentRepository.save(document);
         log.info("File saved successfully.. originalName: {} and path stored: {}", originalFilename, fileLocation);
 
-        responseObject.put("compressedData size", HelperService.sizeInMb(compressedFile.length));
-        responseObject.put("compression time taken", compressionTimeInSecs);
-        responseObject.put("write to file time", writeTimeInSecs);
         // converting to DTO here
-        responseObject.put("document", objectMapper.convertValue(savedDocument, DocumentDTO.class));
+        DocumentResponse documentResponse = objectMapper.convertValue(savedDocument, DocumentResponse.class);
+        documentResponse.setFileSize(HelperService.sizeInMb(compressedFile.length));
+        documentResponse.setFileWriteTime(writeTimeInSecs);
+        documentResponse.setCompressionTime(compressionTimeInSecs);
         // success response
-        return ApiResponse.success(ResponseMessage.DOCUMENT_SAVE_SUCCESS.getMessage(), responseObject);
+        return GenericResponse.success(ResponseMessage.DOCUMENT_SAVE_SUCCESS.getMessage(), documentResponse);
     }
 
-    public ResponseEntity<InputStreamResource> getFile(Long userId, Long documentId, String dispositionType) {
-        log.info("Inside getFile method.. userID:{}, docID: {}, dispType: {}", userId, documentId, dispositionType);
-        if (Stream.of(userId, documentId, dispositionType).anyMatch(ObjectUtils::isEmpty))
+    public ResponseEntity<InputStreamResource> getFile(Long documentId, String dispositionType) {
+        log.info("Inside getFile method.. docID: {}, dispType: {}", documentId, dispositionType);
+        if (Stream.of(documentId, dispositionType).anyMatch(ObjectUtils::isEmpty))
             throw new FileNotFoundException(ErrorMessage.FILE_REQUEST_DATA_EMPTY.getMessage());
 
-        if (!userRepository.existsById(userId))
-            throw new FileNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
+        User user = userRepository.findByEmail(jwtFilter.loggedInUserId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new FileNotFoundException(ErrorMessage.FILE_NOT_FOUND.getMessage()));
         String fileLocation = document.getFileLocation();
@@ -134,6 +137,6 @@ public class FileUploadService {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
-                .body(helperService.readFromFile(userId, compressedFilePath, originalFileName));
+                .body(helperService.readFromFile(user.getId(), compressedFilePath, originalFileName));
     }
 }

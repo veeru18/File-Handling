@@ -2,7 +2,6 @@ package org.vwf.file_handling.upload.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,13 +13,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.vwf.file_handling.upload.constant.*;
+import org.vwf.file_handling.filters.JwtFilter;
+import org.vwf.file_handling.upload.constant.AppConstants;
+import org.vwf.file_handling.upload.constant.ErrorMessage;
+import org.vwf.file_handling.upload.constant.GenericResponse;
+import org.vwf.file_handling.upload.constant.ResponseMessage;
 import org.vwf.file_handling.upload.dto.ImageDTO;
 import org.vwf.file_handling.upload.entity.Image;
 import org.vwf.file_handling.upload.entity.User;
-import org.vwf.file_handling.upload.exceptions.*;
+import org.vwf.file_handling.upload.exceptions.EncodedDataEmptyException;
+import org.vwf.file_handling.upload.exceptions.FileNotFoundException;
+import org.vwf.file_handling.upload.exceptions.ImageAlreadyExistsException;
+import org.vwf.file_handling.upload.exceptions.ImageNotFoundException;
+import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
 import org.vwf.file_handling.upload.repository.ImageRepository;
 import org.vwf.file_handling.upload.repository.UserRepository;
+import org.vwf.file_handling.upload.utility.HelperService;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
@@ -36,11 +44,11 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final JwtFilter jwtFilter;
 
-    public ApiResponse<JSONObject> writeImageToDb(Long userId, MultipartFile multipartFile) throws Exception {
-        log.info("Inside uploadFile method, userId:{}", userId);
-        JSONObject responseObject = new JSONObject();
-        User existingUser = userRepository.findById(userId)
+    public GenericResponse<ImageDTO> writeImageToDb(MultipartFile multipartFile) throws Exception {
+        log.info("Inside uploadFile method");
+        User existingUser = userRepository.findByEmail(jwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.IMAGE_SAVE_FAIL.getMessage()));
         if (ObjectUtils.isEmpty(multipartFile) || multipartFile.isEmpty())
             throw new FileNotFoundException(ErrorMessage.FILE_UPLOAD_FAILED.getMessage());
@@ -57,13 +65,10 @@ public class ImageService {
         double writeTimeInSecs = HelperService.calculateExecutionTime(stopTime, startTime);
         log.info("execution for write into db in seconds: {}", writeTimeInSecs);
 
-
-        responseObject.put("write to db time in seconds", writeTimeInSecs);
-
         // converting to DTO here
-        responseObject.put("image", objectMapper.convertValue(imageData, ImageDTO.class));
+        ImageDTO imageResp = objectMapper.convertValue(imageData, ImageDTO.class);
         // success response
-        return ApiResponse.success(ResponseMessage.IMAGE_SAVE_SUCCESS.getMessage(), responseObject);
+        return GenericResponse.success(ResponseMessage.IMAGE_SAVE_SUCCESS.getMessage(), imageResp);
     }
 
     private Image saveImageData(User user, Image thisImage, MultipartFile multipartFile) throws Exception {
@@ -144,9 +149,9 @@ public class ImageService {
         return Arrays.equals(updatableImgHash, existingImgHash);
     }
 
-    public ResponseEntity<InputStreamResource> getFile(Long userId, Long imageId, String disType) {
+    public ResponseEntity<InputStreamResource> getFile(Long imageId, String disType) {
         log.info("Inside getFile method..");
-        if (!userRepository.existsById(userId))
+        if (userRepository.findByEmail(jwtFilter.loggedInUserId).isEmpty())
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND.getMessage()));

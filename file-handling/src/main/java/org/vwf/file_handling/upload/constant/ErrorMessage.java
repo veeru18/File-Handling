@@ -26,7 +26,11 @@ public enum ErrorMessage {
     PASSWORD_CONTAINS_WHITESPACE("Password Contains Whitespace"),
     PWD_CHAR_COUNTS_NOT_VALID("Password must contain atleast 1 "),
     INVALID_PASSWORD_ENTERED("Invalid Password was entered for login, please retry!"),
-    USER_NOT_FOUND_BY_EMAIL("User not found by email, Please provide valid registered email");
+    USER_NOT_FOUND_BY_EMAIL("User not found by email, Please provide valid registered email"),
+    NO_USERS_EXIST("No User data exists in database"),
+    EXPIRED_JWT("Expired Jwt token, please try login again"),
+    MALFORMED_JWT("Invalid Jwt token form, please try logging in once"),
+    JWT_FILTER_ERROR("Jwt token issue, do check logs!");
 
     private final String message;
 }

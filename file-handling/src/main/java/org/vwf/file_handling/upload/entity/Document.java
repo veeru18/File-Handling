@@ -6,7 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "UF_DOCUMENTS")
@@ -16,13 +21,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Document {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long documentId;
     private String originalFileName;
     private String storedFileName;
     private String fileType;
     private String fileLocation; //storing it as file in a disk drive memory location
-//    private String extension;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

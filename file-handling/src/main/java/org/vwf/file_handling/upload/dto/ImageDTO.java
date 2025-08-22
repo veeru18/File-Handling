@@ -11,7 +11,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class ImageDTO {
     private Long imageId;
-    private String imageData; // storing it as byte[]/aka clob
     @NotEmpty(message = "Image Filename is required")
     private String imageFileName;
     @NotEmpty(message = "Image Type is required")

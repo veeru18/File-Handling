@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 @Component
+@RequiredArgsConstructor
 public class HelperService {
     private static final Logger log = LoggerFactory.getLogger(HelperService.class);
     private static final String SECRET_KEY = "veeresh";
@@ -54,6 +56,7 @@ public class HelperService {
 
     @Value("${app.upload.dir}")
     private String uploadDirectory;
+    private final ObjectMapper objectMapper;
 
     public static double sizeInMb(int compressedFileSize) {
         try {
@@ -73,7 +76,7 @@ public class HelperService {
         if (ObjectUtils.isEmpty(contentType) || contentType.startsWith("video"))
             throw new InvalidContentTypeException(ErrorMessage.DOC_INVALID_TYPE.getMessage());
         if (uploadType.equals(AppConstants.IMAGE) &&
-                (Objects.isNull(filename) || Objects.nonNull(AppConstants.IMG_EXTENSIONS_ALLOWED
+                (Objects.isNull(filename) || Objects.isNull(AppConstants.IMG_EXTENSIONS_ALLOWED
                         .getOrDefault(filename.substring(filename.lastIndexOf(".")), null))))
             throw new InvalidFormatTypeException(ErrorMessage.DOC_INVALID_FORMAT_TYPE.getMessage());
     }
@@ -97,7 +100,7 @@ public class HelperService {
                     originalFilename.substring(originalFilename.lastIndexOf(".")), ".webp");
             return "compressed_" + userId + "$DOC-" + documentId + "$" + newFileName;
         }
-        return "compressed_" + userId + "$DOC-" + documentId + "$" + originalFilename;
+        return userId + "$DOC-" + documentId + "$" + originalFilename;
     }
 
     public InputStreamResource readFromFile(Long userId, Path compressedFilePath, String originalFileName) {
@@ -208,32 +211,22 @@ public class HelperService {
     }
 
     public boolean containsSameContent(Object a, Object b) {
-        ObjectMapper objectMapper = getObjectMapper();
         return objectMapper.convertValue(a, Map.class)
                 .equals(objectMapper.convertValue(b, Map.class));
     }
 
-    public ObjectMapper getObjectMapper() {
-        log.info("In getObjectMapper");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // objectMapper changed because of dates received as json array format becoz of jackson-jsr310 dependency
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        return mapper;
-    }
-
-    private static String getTotalPages(int totalResults, int pageSize) {
-        int result = 0;
+    private static Integer getTotalPages(int totalResults, int pageSize) {
+        int result;
         if (totalResults % pageSize == 0) {
             result = totalResults / pageSize;
         } else {
             result = totalResults / pageSize + 1;
         }
-        return String.valueOf(result);
+        return result;
     }
 
     public static <T> JSONObject getPaginatedList(List<T> sourceList, int pageNumber, int pageSize) {
-        pageNumber = pageNumber + 1;
+//        pageNumber = pageNumber + 1;
         List<T> paginatedList = getPage(sourceList, pageNumber, pageSize);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("currentPage", pageNumber);
@@ -245,22 +238,21 @@ public class HelperService {
 
     private static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
         if (pageSize <= 0 || page <= 0) {
-            throw new IllegalArgumentException("invalid page size: " + pageSize);
+            throw new IllegalArgumentException("Invalid page size: " + pageSize + " or page: "+page);
         }
         int fromIndex = (page - 1) * pageSize;
         if (sourceList == null || sourceList.size() < fromIndex) {
             return Collections.emptyList();
         }
         // toIndex exclusive
-        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+//        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+        return sourceList.stream()
+                .skip(fromIndex)
+                .limit(pageSize).toList();
     }
 
     public static Date getCurrentDateTime() {
         return new Date(new Date().getTime());
-    }
-
-    public static Date getCurrentDateAndTime() {
-        return new Date();
     }
 
     public static Date getCurrentDate() {
@@ -285,18 +277,9 @@ public class HelperService {
         }
     }
 
-    public static Date findFromDateByPeriod(int period) throws ParseException {
-        LocalDate localDate = LocalDate.now().minusDays(period - 1);
-        Date fromDate = (Date) java.sql.Date.valueOf(localDate);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        fromDate = sdf.parse(sdf.format(fromDate));
-        return fromDate;
-    }
-
-    public static Object getObjectFromFunctionData(String functionJsonData, Object obj) throws JsonProcessingException {
+    public static Object getObjectFromFunctionData(String functionJsonData, Class<?> readClass) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Object object = mapper.readValue(functionJsonData, obj.getClass());
-        return object;
+        return mapper.readValue(functionJsonData, readClass);
     }
 
     public static Date formatDate(Date fromDate) {

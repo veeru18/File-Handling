@@ -11,10 +11,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.vwf.file_handling.upload.repository.DocumentRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class FileUploadServiceTest {
+public class DocumentServiceTest {
 
     @InjectMocks
-    private FileUploadService fileUploadService;
+    private DocumentService documentService;
 
     @Mock
     private DocumentRepository documentRepository;
@@ -24,7 +24,7 @@ public class FileUploadServiceTest {
     @BeforeEach
     void setUp() {
         // manually set the @Value field
-        ReflectionTestUtils.setField(fileUploadService, "uploadDirectory", "./resources/static/images");
+        ReflectionTestUtils.setField(documentService, "uploadDirectory", "./resources/static/images");
     }
 
     @Test

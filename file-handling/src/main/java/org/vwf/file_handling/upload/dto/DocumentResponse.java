@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DocumentDTO {
+public class DocumentResponse {
     private Long documentId;
     private String originalFileName;
     private String storedFileName;
@@ -18,4 +18,9 @@ public class DocumentDTO {
     @NotEmpty(message = "FileLocation is required")
     private String fileLocation; //storing it as file in a disk drive memory location
 //    private String extension;
+
+    // newer fields outside of entity
+    private double compressionTime;
+    private double fileWriteTime;
+    private double fileSize;
 }

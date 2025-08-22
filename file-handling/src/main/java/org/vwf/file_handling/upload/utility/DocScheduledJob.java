@@ -23,6 +23,7 @@ public class DocScheduledJob {
 
     // everyday at 5am (or)  "0 0 5 * * 6,7" every sat and sun @5am
     @Scheduled(cron = "0 0 5 * * *")
+//    @Scheduled(fixedDelay = 5000L)
     @Transactional
     public void removeDocEntitiesDaily() {
         log.info("Inside removeDocEntitiesDaily method");

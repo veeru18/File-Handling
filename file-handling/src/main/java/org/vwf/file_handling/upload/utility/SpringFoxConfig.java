@@ -38,8 +38,8 @@ public class SpringFoxConfig implements WebMvcConfigurer {
     }
 
     private ApiInfo apiDetails() {
-        return new ApiInfo("VFile Handling",
-                "VFile Handling API details",
+        return new ApiInfo("File Handler",
+                "File Handling API details",
                 "1.0", "https://github.com/veeru18",
                 contact(),
                 "", "", Collections.emptyList());

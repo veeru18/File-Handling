@@ -1,12 +1,21 @@
 package org.vwf.file_handling.upload.utility;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.vwf.file_handling.upload.constant.GenericResponse;
 import org.vwf.file_handling.upload.constant.ResponseMessage;
 import org.vwf.file_handling.upload.exceptions.EncodedDataEmptyException;
@@ -15,26 +24,22 @@ import org.vwf.file_handling.upload.exceptions.ImageAlreadyExistsException;
 import org.vwf.file_handling.upload.exceptions.ImageNotFoundException;
 import org.vwf.file_handling.upload.exceptions.InvalidContentTypeException;
 import org.vwf.file_handling.upload.exceptions.InvalidFormatTypeException;
-import org.vwf.file_handling.upload.exceptions.UserDeleteException;
 import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
-import org.vwf.file_handling.upload.exceptions.UserSaveException;
 import org.vwf.file_handling.upload.exceptions.UserUpdateException;
 
 import java.io.IOException;
-import java.lang.Object;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class ApplicationExceptionHandler {
+public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
     private final static Logger log = LoggerFactory.getLogger(ApplicationExceptionHandler.class);
 
     /*
     -------------------- user related exceptions ------------------------
     -------------------- user related exceptions ------------------------
     */
-
     @ExceptionHandler(UserNotFoundException.class)
     public GenericResponse<Object> handleUserNotFoundException(UserNotFoundException e) {
         log.warn("Inside handleUserNotFoundException Handler: ", e);
@@ -48,13 +53,6 @@ public class ApplicationExceptionHandler {
         return buildExceptionResponse(ResponseMessage.USER_UPDATE_FAILED.getMessage(),
                 e.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
-
-//    @ExceptionHandler(UserDeleteException.class)
-//    public GenericResponse<Object> handleUserDeleteException(UserDeleteException e) {
-//        log.warn("Inside handleUserDeleteException Handler: ", e);
-//        return buildExceptionResponse(ResponseMessage.USER_DELETE_FAILED.getMessage(),
-//                e.getMessage(), HttpStatus.BAD_REQUEST.value());
-//    }
 
     /*
     -------------------- image/file doc related exceptions ------------------------
@@ -101,23 +99,12 @@ public class ApplicationExceptionHandler {
     */
     // response will be given in below-mentioned format
     // { "status":0, "message":"<errRespMessage>", "errors": map/String }
+
     @ExceptionHandler(IOException.class)
     public GenericResponse<java.lang.Object> handleIOException(IOException e) {
         log.error("Inside handleIOException Handler: ", e);
         return buildExceptionResponse(ResponseMessage.IO_EXCEPTION_FAILURE.getMessage(),
                 e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public GenericResponse<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("Inside handleMethodArgumentNotValidException Handler: ", e);
-        Map<String, String> errors = new HashMap<>();
-        e.getAllErrors().forEach(error -> {
-            // to set fieldName as key and errorMessage from validations as value
-            errors.put(((FieldError) error).getField(), error.getDefaultMessage());
-        });
-        return buildExceptionResponse(ResponseMessage.REQUEST_VALIDATIONS_FAILED.getMessage(),
-                errors, HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler(NoSuchAlgorithmException.class)
@@ -141,15 +128,30 @@ public class ApplicationExceptionHandler {
                 e.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public GenericResponse<Object> handleRuntimeException(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public GenericResponse<Object> handleRuntimeException(Exception e) {
         log.error("Inside handleRuntimeException Handler: ", e);
         return buildExceptionResponse(ResponseMessage.INTERNAL_SERVER_ERROR.getMessage(),
                 e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        log.error("Inside handleMethodArgumentNotValidException Handler: ", ex);
+        Map<String, String> errors = new HashMap<>();
+        ex.getAllErrors().forEach(error -> {
+            // to set fieldName as key and errorMessage from validations as value
+            errors.put(((FieldError) error).getField(), error.getDefaultMessage());
+        });
+        return buildInternalErrorsResponse(ResponseMessage.REQUEST_VALIDATIONS_FAILED.getMessage(),
+                errors, HttpStatus.BAD_REQUEST);
     }
 
     private GenericResponse<Object> buildExceptionResponse(String message, Object errors, int statusCode) {
         return GenericResponse.failure(message, statusCode, errors);
     }
 
+    private ResponseEntity<Object> buildInternalErrorsResponse(String message, Object errors, HttpStatus status) {
+        return ResponseEntity.status(status).body(buildExceptionResponse(message,errors, status.value()));
+    }
 }
