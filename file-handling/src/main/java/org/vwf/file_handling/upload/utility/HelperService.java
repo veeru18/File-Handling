@@ -103,21 +103,21 @@ public class HelperService {
         return userId + "$DOC-" + documentId + "$" + originalFilename;
     }
 
-    public InputStreamResource readFromFile(Long userId, Path compressedFilePath, String originalFileName) {
+    public InputStreamResource readFromFile(Path compressedFilePath) {
         log.info("Inside readFromFile method");
         try {
-            Path exactPath = Paths.get(uploadDirectory, "Stored Documents", String.valueOf(userId), "compressed");
+//            Path exactPath = Paths.get(uploadDirectory, "Stored Documents", String.valueOf(userId), "compressed");
 //            Path exactPath = Paths.get("C:", "Veeresh", "Stored Documents", String.valueOf(userId));
             if (!Files.exists(compressedFilePath))
                 throw new RuntimeException("File does not exist at " + compressedFilePath);
 //            File file = new File(path.toString());
-            byte[] bytes = decompressData(Files.readAllBytes(compressedFilePath));
-            String decompressedPath = exactPath + "\\" + originalFileName;
+//            byte[] bytes = decompressData(Files.readAllBytes(compressedFilePath));
+//            String decompressedPath = exactPath + "\\" + originalFileName;
             // Just writing to view the docs sent, whereas compressed(aka name changed) ones are unable to be opened
-            writeToFile(bytes, decompressedPath);
+//            writeToFile(bytes, decompressedPath);
             //after write of decompressed file, reading it again
-            File decompressedFile = new File(decompressedPath);
-            return new InputStreamResource(new FileInputStream(decompressedFile));
+//            File decompressedFile = new File(decompressedPath);
+            return new InputStreamResource(new FileInputStream(compressedFilePath.toFile()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

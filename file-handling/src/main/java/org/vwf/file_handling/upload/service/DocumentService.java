@@ -137,6 +137,6 @@ public class DocumentService {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
-                .body(helperService.readFromFile(user.getId(), compressedFilePath, originalFileName));
+                .body(helperService.readFromFile(compressedFilePath));
     }
 }
