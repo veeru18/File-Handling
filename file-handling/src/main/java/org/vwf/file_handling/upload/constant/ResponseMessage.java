@@ -37,7 +37,12 @@ public enum ResponseMessage {
     IMAGE_EXIST_BY_SAME_DATA("Image upload failed, due to same DataContent check b/w existing image and uploaded one"),
 
     USER_REGISTER_SUCCESS("User Registered Successfully"),
-    USER_LOGIN_SUCCESS("User Logged in Successfully");
+    USER_LOGIN_SUCCESS("User Logged in Successfully"),
+    REQUEST_VALIDATIONS_FAILED("Request DTOs' validation has failed, please check the logs!"),
+    INVALID_CREDENTIALS("Please check, either username or password is invalid!"),
+    AUTHENTICATION_FAILED("Authentication has failed! Please check the sent request"),
+    INVALID_JWT_TOKEN("Invalid or expired JWT token, Authentication Failed"),
+    ACCESS_DENIED("Your request is denied to access this resource");
 
     private final String message;
 

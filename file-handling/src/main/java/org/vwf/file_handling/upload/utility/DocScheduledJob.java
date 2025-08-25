@@ -1,4 +1,4 @@
-package org.vwf.file_handling.upload.constant;
+package org.vwf.file_handling.upload.utility;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ public class DocScheduledJob {
 
     // everyday at 5am (or)  "0 0 5 * * 6,7" every sat and sun @5am
     @Scheduled(cron = "0 0 5 * * *")
+//    @Scheduled(fixedDelay = 5000L)
     @Transactional
     public void removeDocEntitiesDaily() {
         log.info("Inside removeDocEntitiesDaily method");
@@ -35,9 +36,10 @@ public class DocScheduledJob {
                     boolean missingFile = location == null || location.isBlank()
                             || !Files.isRegularFile(Path.of(location));
 
-                    if (missingFile)
+                    if (missingFile) {
                         documentRepository.deleteById(doc.getDocumentId());
-
+                        log.info("Removed record: {}", doc.getDocumentId());
+                    }
                     if (count.incrementAndGet() % 50 == 0)
                         documentRepository.flush();
                 } catch (Exception e) {
