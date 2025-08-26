@@ -47,7 +47,6 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final HelperService helperService;
     private final ObjectMapper objectMapper;
-    private final JwtFilter jwtFilter;
     private final UserRepository userRepository;
 
     @Transactional
@@ -55,7 +54,7 @@ public class DocumentService {
         log.info("Inside uploadFile method");
         if (Objects.isNull(multipartFile) || multipartFile.isEmpty())
             throw new FileUploadFailException(ErrorMessage.FILE_REQUEST_DATA_EMPTY.getMessage());
-        User user = userRepository.findByEmail(jwtFilter.loggedInUserId)
+        User user = userRepository.findByEmail(JwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         Document document = new Document();
         // validating its content type(extension) and filename
@@ -123,7 +122,7 @@ public class DocumentService {
         if (Stream.of(documentId, dispositionType).anyMatch(ObjectUtils::isEmpty))
             throw new FileNotFoundException(ErrorMessage.FILE_REQUEST_DATA_EMPTY.getMessage());
 
-        User user = userRepository.findByEmail(jwtFilter.loggedInUserId)
+        User user = userRepository.findByEmail(JwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new FileNotFoundException(ErrorMessage.FILE_NOT_FOUND.getMessage()));
