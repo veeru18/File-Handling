@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class ImageServiceTest {
 
     @Test
     public void getImage_throwsUserNotFoundException_whenUserMissing() {
-        when(userRepository.findByEmail(eq("veeresh.ta@wecodee.com")))
+        when(userRepository.findByEmail(anyString()))
                 .thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,

@@ -14,8 +14,6 @@ public enum ResponseMessage {
     IMAGE_FETCH_FAILED("Image fetch failed"),
 
     //save responses
-    USER_SAVE_FAILED("User Save failed"),
-    USER_SAVE_SUCCESS("User Save successfully"),
     DOCUMENT_SAVE_FAILED("Document Save failed"),
     DOCUMENT_SAVE_SUCCESS("Document Save successfully"),
     FILE_SAVE_FAILED("File Save failed"),
@@ -24,10 +22,6 @@ public enum ResponseMessage {
     //update responses
     USER_UPDATE_FAILED("User Update Failed"),
     USER_UPDATE_SUCCESS("User update success"),
-
-    //delete responses
-    USER_DELETE_FAILED("User delete Failed"),
-    USER_DELETE_SUCCESS("User delete success"),
 
     INVALID_ARGS_PASSED("Invalid Arguments passed"),
     IO_EXCEPTION_FAILURE("IO exception has occurred"),

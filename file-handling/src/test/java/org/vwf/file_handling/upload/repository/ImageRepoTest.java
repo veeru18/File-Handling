@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @DataJpaTest
-// uses internally self configured h2 db
+// doesn't use(by internally self configured h2 db), if not added in pom.xml
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ImageRepoTest {
 
