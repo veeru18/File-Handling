@@ -33,7 +33,6 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
-    private final JwtFilter jwtFilter;
 
     public GenericResponse<List<UserResponse>> getAllUsers() {
         log.info("Inside getAllUsers method");
@@ -47,7 +46,7 @@ public class UserService {
 
     public GenericResponse<UserResponse> getUser() {
         log.info("Inside getUser method");
-        User user = userRepository.findByEmail(jwtFilter.loggedInUserId)
+        User user = userRepository.findByEmail(JwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return GenericResponse.success(ResponseMessage.USER_FETCH_SUCCESS.getMessage(), userResponse);
@@ -58,7 +57,7 @@ public class UserService {
         if (ObjectUtils.isEmpty(userRequest))
             throw new UserUpdateException(ErrorMessage.USER_NOT_FOUND_INREQUEST.getMessage());
         // finding by email since email is taken as username in
-        User existingUser = userRepository.findByEmail(jwtFilter.loggedInUserId)
+        User existingUser = userRepository.findByEmail(JwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserUpdateException(ErrorMessage.USER_UPDATE_FAIL.getMessage()));
         modelMapper.map(userRequest, existingUser);
         UserResponse userResponse = modelMapper.map(

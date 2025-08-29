@@ -28,13 +28,13 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    public String loggedInUserId = null;
-    public String clientIp = null;
+    public static String loggedInUserId = null;
+    public static String clientIp = null;
     public static String url = null;
-    public String rType = null;
-    public int status = 0;
-    public Date intime = null;
-    public String jwtToken = null;
+    public static String rType = null;
+    public static int status = 0;
+    public static Date intime = null;
+    public static String jwtToken = null;
 
     private final TokenUtils tokenUtils;
     private final CustomUserDetailService customUserDetailService;

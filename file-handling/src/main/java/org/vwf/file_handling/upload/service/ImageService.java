@@ -44,11 +44,10 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-    private final JwtFilter jwtFilter;
 
     public GenericResponse<ImageResponse> writeImageToDb(MultipartFile multipartFile) throws Exception {
         log.info("Inside uploadFile method");
-        User existingUser = userRepository.findByEmail(jwtFilter.loggedInUserId)
+        User existingUser = userRepository.findByEmail(JwtFilter.loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.IMAGE_SAVE_FAIL.getMessage()));
         if (ObjectUtils.isEmpty(multipartFile) || multipartFile.isEmpty())
             throw new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND_REQ.getMessage());
@@ -116,8 +115,8 @@ public class ImageService {
     }
 
     public ResponseEntity<InputStreamResource> getFile(Long imageId, String disType) {
-        log.info("Inside getFile method..");
-        if (userRepository.findByEmail(jwtFilter.loggedInUserId).isEmpty())
+        log.info("Inside getFile method.., userId: {}", JwtFilter.loggedInUserId);
+        if (userRepository.findByEmail(JwtFilter.loggedInUserId).isEmpty())
             throw new UserNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage());
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ImageNotFoundException(ErrorMessage.IMAGE_NOT_FOUND.getMessage()));
