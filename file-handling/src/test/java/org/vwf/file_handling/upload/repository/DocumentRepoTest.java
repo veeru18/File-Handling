@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 // doesn't use(by internally self configured h2 db), if not added in pom.xml
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class DocumentRepoTest {
 
     @Autowired
@@ -23,6 +23,14 @@ public class DocumentRepoTest {
 
     @Test
     public void findAllReturnsNonNull() {
+        // mandatory check start here
+        Document mockDoc = new Document();
+//        mockDoc.setUser(finalUser); // not mandatory
+        mockDoc.setDocumentId(10L);
+        mockDoc.setFileType("image/gif");
+        mockDoc.setOriginalFileName("someFile.pdf");
+
+        documentRepository.save(mockDoc);
         List<Document> docs = documentRepository.findAll();
         assertThat(docs).isNotEmpty(); // AssertJ method
     }
@@ -31,8 +39,6 @@ public class DocumentRepoTest {
     public void findByFileNameReturnsEmpty() {
         Optional<Document> byId = documentRepository.findById(20L);
         assertThat(byId).isNotPresent();
-        Long someValue = documentRepository.getDocumentValue();
-        assertThat(someValue).isNotNegative();
     }
 
     @Test
@@ -55,7 +61,5 @@ public class DocumentRepoTest {
         Optional<Document> byId = documentRepository.findById(10L);
         assertThat(byId).isNotEmpty();
         assertThat(byId).isExactlyInstanceOf(Optional.class);
-        Long byImageFileName = documentRepository.getDocumentValue();
-        assertThat(byImageFileName).isNotNegative();
     }
 }

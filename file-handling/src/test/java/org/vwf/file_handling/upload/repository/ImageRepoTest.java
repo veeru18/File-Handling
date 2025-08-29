@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @DataJpaTest
 // doesn't use(by internally self configured h2 db), if not added in pom.xml
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ImageRepoTest {
 
     @Autowired
@@ -25,13 +25,20 @@ public class ImageRepoTest {
 
     @Test
     public void findAllReturnsNonNull() {
+        Image mockImage = new Image();
+//        mockImage.setUser(finalUser); // not mandatory
+        mockImage.setImageId(10L);
+        mockImage.setImageType("image/gif");
+        mockImage.setImageFileName("someFile.pdf");
+
+        imageRepository.save(mockImage);
         List<Image> images = imageRepository.findAll();
         assertThat(images).isNotEmpty(); // AssertJ method
     }
 
     @Test
     public void findByFileNameReturnsEmpty() {
-        Optional<Image> byImageFileName = imageRepository.findByImageFileName(any());
+        Optional<Image> byImageFileName = imageRepository.findByImageFileName("someFile.pdf");
         assertThat(byImageFileName).isNotPresent();
     }
 
