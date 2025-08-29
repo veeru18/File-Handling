@@ -1,10 +1,8 @@
 package org.vwf.file_handling.upload.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,10 +20,8 @@ import org.vwf.file_handling.security.CustomUserDetailService;
 import org.vwf.file_handling.security.JwtAuthenticationEntryPoint;
 import org.vwf.file_handling.upload.constant.GenericResponse;
 import org.vwf.file_handling.upload.constant.ResponseMessage;
-import org.vwf.file_handling.upload.dto.UserResponse;
 import org.vwf.file_handling.upload.entity.User;
 import org.vwf.file_handling.upload.service.UserService;
-import org.vwf.file_handling.upload.utility.ApplicationExceptionHandler;
 
 import static org.mockito.Mockito.when;
 

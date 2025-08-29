@@ -7,12 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.hamcrest.MockitoHamcrest;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.vwf.file_handling.filters.JwtFilter;
 import org.vwf.file_handling.upload.entity.Image;
@@ -21,24 +20,24 @@ import org.vwf.file_handling.upload.exceptions.ImageNotFoundException;
 import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
 import org.vwf.file_handling.upload.repository.ImageRepository;
 import org.vwf.file_handling.upload.repository.UserRepository;
-import org.vwf.file_handling.upload.utility.HelperService;
 
-import java.util.Objects;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+//@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -80,7 +79,7 @@ public class ImageServiceTest {
         when(imageRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(ImageNotFoundException.class, ()-> imageService.getFile(1L,"inline"));
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository).findByEmail(anyString()); //default is 1 invocation check
         verify(imageRepository, times(1)).findById(anyLong());
     }
 
@@ -97,7 +96,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    void getImage_returnsImage_whenExists() {
+    void getImage_returnsImage_whenExists() throws IOException {
         // Arrange
         Long fileId = 1L;
         String email = "veeresh.ta@wecodee.com";
@@ -111,7 +110,10 @@ public class ImageServiceTest {
         Image mockImage = new Image();
         mockImage.setImageId(fileId);
         mockImage.setImageFileName("test.png");
-        mockImage.setImageData(new String(new byte[]{1, 2, 3}));
+        Path file = Paths.get("C:\\Veeresh\\project docs\\my docs\\All Mini Projects\\Files-Handler\\File-Handling\\file-handling\\src\\test\\resources\\static\\docs\\scaled_guy_face_photo.jpg");
+        String encoded = new String(Base64.getEncoder().encode(Files.readAllBytes(file)));
+        mockImage.setImageData(encoded);
+        mockImage.setImageType(MediaType.IMAGE_PNG_VALUE);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
 
@@ -122,8 +124,6 @@ public class ImageServiceTest {
 
         // Assert
         assertNotNull(result);
-//        assertEquals(fileId, result.getId());
-//        assertEquals("test.png", result.getFileName());
         verify(imageRepository, times(1)).findById(anyLong());
     }
 }
