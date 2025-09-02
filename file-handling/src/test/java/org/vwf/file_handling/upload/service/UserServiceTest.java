@@ -1,7 +1,5 @@
 package org.vwf.file_handling.upload.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import org.vwf.file_handling.upload.exceptions.UserNotFoundException;
 import org.vwf.file_handling.upload.exceptions.UserUpdateException;
 import org.vwf.file_handling.upload.repository.UserRepository;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
